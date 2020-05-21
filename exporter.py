@@ -6,7 +6,7 @@ import xml.dom.minidom
 import time
 import subprocess
 
-print ("Working dir is %s" % os.getcwd())
+print('Working dir is', os.getcwd())
 
 def mkdir(path):
     try:
