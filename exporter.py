@@ -69,30 +69,33 @@ while True:
                 os.rename(processingDir + dirname, failureDir + dirname)
                 continue
             print('Found project file for', dirname, '-> resolving to relative path...')
+            projectPath = processingDir + dirname + '/'
             # Load the doc
-            xml = xml.dom.minidom.parse(processingDir + dirname + '/' + projectFile)
-            items = xml.getElementsByTagName('property')
+            xmlFile = xml.dom.minidom.parse(projectPath + projectFile)
+            items = xmlFile.getElementsByTagName('property')
             # Replace all path to relative
             for item in items:
                 if item.getAttribute('name') == 'resource':
                     item.firstChild.nodeValue = os.path.basename(item.firstChild.nodeValue)
-            # Write back
+            # Write modified project file back
             correctedPojectFile = os.path.splitext(projectFile)[0] + '.relative.mlt'
-            out = open(processingDir + dirname + '/' + correctedPojectFile, 'w')
-            xml.writexml(out)
+            out = open(projectPath + correctedPojectFile, 'w')
+            xmlFile.writexml(out)
             out.close()
             print('Done', dirname, '-> starting export...')
             # Run export command with log file...
-            log = open(processingDir + dirname + '/LOG', 'w')
-            result = subprocess.run([shotcutQmelt, '-verbose', '-abort', '-progress', '-consumer', 'avformat:' + os.path.splitext(projectFile)[0] + '.mp4', correctedPojectFile], stderr=log, stdout=log, cwd=processingDir + dirname)
+            log = open(projectPath + '/LOG', 'w')
+            result = subprocess.run([shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + os.path.splitext(projectFile)[0] + '.mp4', correctedPojectFile], stderr=log, stdout=log, cwd=processingDir + dirname)
             log.close()
+            # Remove modified project file again...
+            os.remove(projectPath + correctedPojectFile)
             # And check the return code
             if result.returncode is 0:
                 print('Good return value -> SUCCESS')
-                os.rename(processingDir + dirname, successDir + dirname)
+                os.rename(projectPath, successDir + dirname)
             else:
                 print('Bad return value -> FAILED')
-                os.rename(processingDir + dirname, failureDir + dirname)
+                os.rename(projectPath, failureDir + dirname)
         break
 
     # Sleep a while before next run...
