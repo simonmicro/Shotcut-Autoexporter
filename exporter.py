@@ -34,26 +34,30 @@ if not os.path.exists(shotcutQmelt):
     sys.exit('Ooops, Shotcuts qmelt is missing (expected at ' + shotcutQmelt + ')!')
 
 while True:
-    # Now check every subfolder inside the input if the have the OK(-file) to start it...
+    # Check if the input folder contains the OK file
+    foundOK = False
     for (dirpath, dirnames, filenames) in os.walk(inputDir):
-        print('Inputs:', dirnames)
-        for dirname in dirnames:
-            foundOK = False
-            for (dirpath, dirnames, filenames) in os.walk(inputDir + dirname):
-                if 'OK' in filenames:
-                    foundOK = True
-                break
-            if not foundOK:
-                print('Project', dirname, 'has no OK file -> ignoring...')
-                continue
-            # If yes, move it over to the processing section...
-            print('Project', dirname, 'has the OK file -> moving the project over to processing...')
-            os.rename(inputDir + dirname, processingDir + dirname)
-            os.remove(processingDir + dirname + '/OK')
+        if 'OK' in filenames:
+            foundOK = True
         break
 
+    # If we've got the OK, move all project folders into processing...
+    if(foundOK):
+        for (dirpath, dirnames, filenames) in os.walk(inputDir):
+            print('Inputs:', dirnames)
+            for dirname in dirnames:
+                # Move it over to the processing section...
+                print('Project', dirname, 'found -> moving the project over to the processing area...')
+                os.rename(inputDir + dirname, processingDir + dirname)
+            break
+        os.remove(inputDir + 'OK')
+
     # Now run the export for every project folder inside the processing dir
+    processed = False
     for (dirpath, dirnames, filenames) in os.walk(processingDir):
+        if not len(dirnames):
+            continue
+        processed = True
         print('Queued projects:', dirnames)
         for dirname in dirnames:
             projectFile = None
@@ -98,6 +102,7 @@ while True:
                 os.rename(projectPath, failureDir + dirname)
         break
 
-    # Sleep a while before next run...
-    print('Sleeping...')
+    # Sleep a while before next run (only show text if we have done anything)...
+    if foundOK or processed:
+        print('Sleeping...')
     time.sleep(10)
