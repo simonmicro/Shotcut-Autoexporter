@@ -6,6 +6,8 @@ import xml.dom.minidom
 import time
 import subprocess
 
+sys.stdout = open('exporter.log', 'w')
+
 print('Working dir is', os.getcwd())
 
 def mkdir(path):
@@ -16,16 +18,19 @@ def mkdir(path):
         True
 
 # Some dir definitions
-inputDir = os.getcwd() + '/input/'
-processingDir = os.getcwd() + '/processing/'
-successDir = os.getcwd() + '/success/'
-failureDir = os.getcwd() + '/failure/'
-shotcutDir = os.getcwd() + '/shotcut/'
+workingDir = os.getcwd()
+inputDir = workingDir + '/input/'
+processingDir = workingDir + '/processing/'
+outDir = workingDir + '/output/'
+failureDir = outDir + 'failure/'
+successDir = outDir + 'success/'
+shotcutDir = workingDir + '/shotcut/'
 shotcutQmelt = shotcutDir + 'qmelt'
 
 # Create the expected dirs...
 mkdir(inputDir)
 mkdir(processingDir)
+mkdir(outDir)
 mkdir(successDir)
 mkdir(failureDir)
 
@@ -34,6 +39,9 @@ if not os.path.exists(shotcutQmelt):
     sys.exit('Ooops, Shotcuts qmelt is missing (expected at ' + shotcutQmelt + ')!')
 
 while True:
+    # Make sure the log is written
+    sys.stdout.flush()
+
     # Check if the input folder contains the OK file
     foundOK = False
     for (dirpath, dirnames, filenames) in os.walk(inputDir):
