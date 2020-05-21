@@ -20,6 +20,7 @@ processingDir = os.getcwd() + '/processing/'
 successDir = os.getcwd() + '/success/'
 failureDir = os.getcwd() + '/failure/'
 shotcutDir = os.getcwd() + '/shotcut/'
+shotcutQmelt = shotcutDir + 'qmelt'
 
 # Create the expected dirs...
 mkdir(inputDir)
@@ -28,8 +29,8 @@ mkdir(successDir)
 mkdir(failureDir)
 
 # Make sure we have the Shotcut exporter binary...
-if not os.path.exists(shotcutDir + 'qmelt'):
-    sys.exit('Ooops, Shotcut binaries are missing!')
+if not os.path.exists(shotcutQmelt):
+    sys.exit('Ooops, Shotcuts qmelt is missing (expected at ' + shotcutQmelt + ')!')
 
 while True:
     # Now check every subfolder inside the input if the have the OK(-file) to start it...
@@ -69,7 +70,7 @@ while True:
             print('Found project file for', dirname, '-> starting export...')
             # Run export command with log file...
             log = open(processingDir + dirname + '/LOG', 'w')
-            result = subprocess.run([shotcutDir + 'qmelt', '-abort', '-progress', '-consumer', 'avformat:' + os.path.splitext(projectFile)[0] + '.mp4', projectFile], stderr=log, stdout=log, cwd=processingDir + dirname)
+            result = subprocess.run([shotcutQmelt, '-abort', '-progress', '-consumer', 'avformat:' + os.path.splitext(projectFile)[0] + '.mp4', projectFile], stderr=log, stdout=log, cwd=processingDir + dirname)
             log.close()
             # And check the return code
             if result.returncode is 0:
