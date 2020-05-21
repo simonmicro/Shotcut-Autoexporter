@@ -2,6 +2,7 @@
 
 import os
 import sys
+import xml.dom.minidom
 import time
 import subprocess
 
@@ -67,10 +68,23 @@ while True:
                 print('Could not find any .mlt file for', dirname, '-> FAILED')
                 os.rename(processingDir + dirname, failureDir + dirname)
                 continue
-            print('Found project file for', dirname, '-> starting export...')
+            print('Found project file for', dirname, '-> resolving to relative path...')
+            # Load the doc
+            xml = xml.dom.minidom.parse(processingDir + dirname + '/' + projectFile)
+            items = xml.getElementsByTagName('property')
+            # Replace all path to relative
+            for item in items:
+                if item.getAttribute('name') == 'resource':
+                    item.firstChild.nodeValue = os.path.basename(item.firstChild.nodeValue)
+            # Write back
+            correctedPojectFile = os.path.splitext(projectFile)[0] + '.relative.mlt'
+            out = open(processingDir + dirname + '/' + correctedPojectFile, 'w')
+            xml.writexml(out)
+            out.close()
+            print('Done', dirname, '-> starting export...')
             # Run export command with log file...
             log = open(processingDir + dirname + '/LOG', 'w')
-            result = subprocess.run([shotcutQmelt, '-abort', '-progress', '-consumer', 'avformat:' + os.path.splitext(projectFile)[0] + '.mp4', projectFile], stderr=log, stdout=log, cwd=processingDir + dirname)
+            result = subprocess.run([shotcutQmelt, '-verbose', '-abort', '-progress', '-consumer', 'avformat:' + os.path.splitext(projectFile)[0] + '.mp4', correctedPojectFile], stderr=log, stdout=log, cwd=processingDir + dirname)
             log.close()
             # And check the return code
             if result.returncode is 0:
