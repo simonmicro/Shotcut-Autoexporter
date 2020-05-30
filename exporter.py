@@ -5,6 +5,7 @@ import sys
 import xml.dom.minidom
 import time
 import subprocess
+import dbus
 
 sys.stdout = open('exporter.log', 'w')
 
@@ -15,7 +16,10 @@ def mkdir(path):
         os.mkdir(path)
     except OSError as e:
 #        print 'Creation of the directory', path, 'failed:', format(e)
-        True
+        pass
+
+# Config
+enable_inhibit_prevention = True
 
 # Some dir definitions
 workingDir = os.getcwd()
@@ -33,6 +37,11 @@ mkdir(processingDir)
 mkdir(outDir)
 mkdir(successDir)
 mkdir(failureDir)
+
+# Now prepare the dbus (if enabled)
+session_manager = None
+if(enable_inhibit_prevention):
+    session_manager = dbus.SessionBus().get_object('org.gnome.SessionManager', '/org/gnome/SessionManager')
 
 # Make sure we have the Shotcut exporter binary...
 if not os.path.exists(shotcutQmelt):
@@ -95,10 +104,19 @@ while True:
             xmlFile.writexml(out)
             out.close()
             print('Done', dirname, '-> starting export...')
+            # Inhibit dbus if enabled
+            inhibit_cookie = None
+            if(enable_inhibit_prevention):
+                print('Inhibiting dbus...')
+                inhibit_cookie = session_manager.Inhibit('shotcut-autoexporter', dbus.UInt32(0), 'export', dbus.UInt32(8), dbus_interface='org.gnome.SessionManager')
             # Run export command with log file...
             log = open(projectPath + '/LOG', 'w')
             result = subprocess.run([shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + os.path.splitext(projectFile)[0] + '.mp4', correctedPojectFile], stderr=log, stdout=log, cwd=processingDir + dirname)
             log.close()
+            # Uninhibit dbus if enabled
+            if(enable_inhibit_prevention):
+                print('Uninhibiting dbus...')
+                session_manager.Uninhibit(inhibit_cookie, dbus_interface='org.gnome.SessionManager')
             # Remove modified project file again...
             os.remove(projectPath + correctedPojectFile)
             # And check the return code
