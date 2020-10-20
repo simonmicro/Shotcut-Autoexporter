@@ -6,6 +6,7 @@ import xml.dom.minidom
 import time
 import subprocess
 import dbus
+import datetime
 
 sys.stdout = open('exporter.log', 'w')
 
@@ -120,7 +121,7 @@ while True:
             # Remove modified project file again...
             os.remove(projectPath + correctedPojectFile)
             # And check the return code
-            if result.returncode is 0:
+            if result.returncode == 0:
                 print('Good return value -> SUCCESS')
                 os.rename(projectPath, successDir + dirname)
             else:
