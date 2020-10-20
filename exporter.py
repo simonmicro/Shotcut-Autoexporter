@@ -7,17 +7,16 @@ import time
 import subprocess
 import dbus
 import datetime
+import logging
+logging.basicConfig(filename='exporter.log', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
-sys.stdout = open('exporter.log', 'w')
-
-print('Working dir is', os.getcwd())
+logging.info('Working dir is' + os.getcwd())
 
 def mkdir(path):
     try:
         os.mkdir(path)
     except OSError as e:
-#        print 'Creation of the directory', path, 'failed:', format(e)
-        pass
+        logging.warning('Creation of the directory ' + path + ' failed: ' + format(e))
 
 # Config
 enable_inhibit_prevention = True
@@ -62,10 +61,10 @@ while True:
     # If we've got the OK, move all project folders into processing...
     if(foundOK):
         for (dirpath, dirnames, filenames) in os.walk(inputDir):
-            print('Inputs:', dirnames)
+            logging.debug('Inputs: ' + str(dirnames))
             for dirname in dirnames:
                 # Move it over to the processing section...
-                print('Project', dirname, 'found -> moving the project over to the processing area...')
+                logging.info('Project ' + dirname + ' found -> moving the project over to the processing area...')
                 os.rename(inputDir + dirname, processingDir + dirname)
             break
         os.remove(inputDir + 'OK')
@@ -76,7 +75,7 @@ while True:
         if not len(dirnames):
             continue
         processed = True
-        print('Queued projects:', dirnames)
+        logging.info('Queued projects: ' + str(dirnames))
         for dirname in dirnames:
             projectFile = None
             for (dirpath, dirnames, filenames) in os.walk(processingDir + dirname):
@@ -87,10 +86,10 @@ while True:
                 break
             if projectFile is None:
                 # No project file found -> move it over to failure
-                print('Could not find any .mlt file for', dirname, '-> FAILED')
+                logging.error('Could not find any .mlt file for ' + dirname + ' -> FAILED')
                 os.rename(processingDir + dirname, failureDir + dirname)
                 continue
-            print('Found project file for', dirname, '-> resolving to relative path...')
+            logging.debug('Found project file for ' + dirname + ' -> resolving to relative path...')
             projectPath = processingDir + dirname + '/'
             # Load the doc
             xmlFile = xml.dom.minidom.parse(projectPath + projectFile)
@@ -104,11 +103,11 @@ while True:
             out = open(projectPath + correctedPojectFile, 'w')
             xmlFile.writexml(out)
             out.close()
-            print('Done', dirname, '-> starting export...')
+            logging.debug('Prepared ' + dirname + ' -> starting export...')
             # Inhibit dbus if enabled
             inhibit_cookie = None
             if(enable_inhibit_prevention):
-                print('Inhibiting dbus...')
+                logging.debug('Inhibiting dbus...')
                 inhibit_cookie = session_manager.Inhibit('shotcut-autoexporter', dbus.UInt32(0), 'export', dbus.UInt32(8), dbus_interface='org.gnome.SessionManager')
             # Run export command with log file...
             log = open(projectPath + '/LOG', 'w')
@@ -116,20 +115,20 @@ while True:
             log.close()
             # Uninhibit dbus if enabled
             if(enable_inhibit_prevention):
-                print('Uninhibiting dbus...')
+                logging.debug('Uninhibiting dbus...')
                 session_manager.Uninhibit(inhibit_cookie, dbus_interface='org.gnome.SessionManager')
             # Remove modified project file again...
             os.remove(projectPath + correctedPojectFile)
             # And check the return code
             if result.returncode == 0:
-                print('Good return value -> SUCCESS')
+                logging.debug('Good return value -> SUCCESS')
                 os.rename(projectPath, successDir + dirname)
             else:
-                print('Bad return value -> FAILED')
+                logging.error('Bad return value -> FAILED')
                 os.rename(projectPath, failureDir + dirname)
         break
 
     # Sleep a while before next run (only show text if we have done anything)...
     if foundOK or processed:
-        print('Sleeping...')
+        logging.debug('Sleeping...')
     time.sleep(10)
