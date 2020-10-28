@@ -1,18 +1,13 @@
-<html>
+<!doctype html>
+<html lang="en">
     <head>
-        <title>{{ title }}</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="{{ url_for('static', filename='root.css') }}">
+        <script src="{{ url_for('static', filename='root.js') }}"></script>
+        <title>{{ title }} - ShotcutAutoexporter</title>
     </head>
-    <body>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-    
+    <body>    
         {% block root %}{% endblock %}
     </body>
 </html>

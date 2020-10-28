@@ -2,8 +2,27 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app import app
-from app.user import User
+from app.models import User, STATUS_QUEUED, STATUS_WORKING, STATUS_SUCCESS, STATUS_FAILURE
 from app.forms import LoginForm
+
+projects = [
+    {
+        'name':'Queued',
+        'status':STATUS_QUEUED
+    },
+    {
+        'name':'In progress',
+        'status':STATUS_WORKING
+    },
+    {
+        'name':'Success',
+        'status':STATUS_SUCCESS
+    },
+    {
+        'name':'Failed',
+        'status':STATUS_FAILURE
+    }
+]
 
 @app.route('/')
 def index():
@@ -29,10 +48,25 @@ def login():
             next_page = url_for('login')
         return redirect(next_page)
     return render_template('login.html', title='LOGIN', form=form)
+    
+@app.route('/delete')
+@login_required
+def delete():
+    flash('TODO')
+    flash('delete')
+    return redirect('list')
+    
+@app.route('/download')
+@login_required
+def download():
+    flash('TODO')
+    flash('download')
+    return redirect('list')
 
 @app.route('/logout')
 @login_required
 def logout():
+    flash('Bye!')
     logout_user()
     return redirect(url_for('login'))
 
@@ -40,7 +74,7 @@ def logout():
 @login_required
 def list():
     # TODO: List current projects (queued, in progress, success, failure), Logout, Add project
-    return render_template('list.html', title='LIST')
+    return render_template('list.html', title='LIST', projects=projects)
     
 @app.route('/upload')
 @login_required

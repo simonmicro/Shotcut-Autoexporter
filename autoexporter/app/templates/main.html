@@ -1,7 +1,17 @@
 {% extends "root.html" %}
 
 {% block root %}
-    <h1>MAIN</h1>
-    <a href="{{ url_for('logout') }}">Logout</a>
+    <nav id="main-header">
+        <span>
+            <span id="main-header-title" href="/"><b>Shotcut</b>Autoexporter</span>
+            <a href="{{ url_for('list') }}" class="nav-link">List</a>
+        </span>
+        <span>
+            <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+        </span>
+    </nav>
+    
+    {% include "flash.html" %}
+    
     {% block main %}{% endblock %}
 {% endblock %}
