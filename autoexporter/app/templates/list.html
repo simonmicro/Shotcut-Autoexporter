@@ -4,7 +4,6 @@
     <table id="project-list">
         <thead>
             <th>Name</th>
-            <th></th>
             <th>Actions</th>
         </thead>
 
@@ -12,8 +11,7 @@
             {% for project in projects %}
             <tr class="project-status project-status-{% if project.status == 0 %}queued{% elif project.status == 1 %}working{% elif project.status == 2 %}success{% elif project.status == 3 %}failed{% endif %}">
                 <td>{{ project.name }}</td>
-                <td>{{ project.status }}</td>
-                <td>{% if project.status == 2 %}<a href="{{ url_for('download', name=project.name) }}">↓</a>{% endif %}{% if project.status != 1 %}<a href="{{ url_for('delete', name=project.name) }}">X</a>{% endif %}</td>
+                <td>{% if project.status == 1 %}<progress max="1" value="{{ project.progress }}"> {{ project.progress * 100 }}% </progress>{% endif %}{% if project.status == 2 %}<a href="{{ url_for('download', name=project.name) }}">↓</a>{% endif %}{% if project.status != 1 %}<a href="{{ url_for('delete', name=project.name) }}">X</a>{% endif %}</td>
             </tr>
             {% endfor %}
         </tbody>

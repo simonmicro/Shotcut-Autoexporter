@@ -8,18 +8,22 @@ from app.forms import LoginForm
 projects = [
     {
         'name':'Queued',
+        'progress':None,
         'status':STATUS_QUEUED
     },
     {
         'name':'In progress',
+        'progress':0.6,
         'status':STATUS_WORKING
     },
     {
         'name':'Success',
+        'progress':None,
         'status':STATUS_SUCCESS
     },
     {
         'name':'Failed',
+        'progress':None,
         'status':STATUS_FAILURE
     }
 ]

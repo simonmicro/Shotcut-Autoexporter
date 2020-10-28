@@ -1,5 +1,28 @@
 {% extends "main.html" %}
 
 {% block main %}
-    <h1>UPLOAD</h1>
+    <script>
+        console.log('UPLOAD');
+    </script>
+
+    <button type="button">Add file</button>
+    <button type="button">Add folder</button>
+    
+    <table id="project-list">
+        <thead>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Actions</th>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>Project.mtl</td>
+                <td>500MB</td>
+                <td><button type="button">X</button></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <button type="button" disabled>Upload</button>
 {% endblock %}
