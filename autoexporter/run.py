@@ -1,3 +1,5 @@
 from app import app
 
+print('THIS IS AN TECHNICAL DEMO - DO NOT USE IN PRODUCTION UNTIL THIS MESSAGE DISAPPEARS!')
+
 app.run(host='0.0.0.0')
