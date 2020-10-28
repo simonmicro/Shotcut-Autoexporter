@@ -1,34 +1,67 @@
 {% extends "main.html" %}
 
+{% block main_head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='upload.css') }}">
+{% endblock %}
+
 {% block main %}
-    <script>
-        console.log('UPLOAD');
-    </script>
-    
-    <table id="project-list">
+    <table id="uploads">
         <thead>
             <th>Name</th>
             <th>Size</th>
             <th>Actions</th>
         </thead>
 
-        <tbody>
-            <tr>
-                <td>Project.mtl</td>
-                <td>500MB</td>
-                <td class="actions"><button type="button" class="mdi mdi-delete"></button></td>
-            </tr>
-            <tr>
-                <td>Project.jpg</td>
-                <td>12.4MB</td>
-                <td class="actions"><button type="button" class="mdi mdi-delete"></button></td>
-            </tr>
-        </tbody>
+        <tbody id="fileList"></tbody>
     </table>
     
     <p>
-        <button type="button" class="mdi mdi-plus-box">Add file</button>
-        <button type="button" class="mdi mdi-plus-box-multiple">Add folder</button>
-        <button type="button" class="mdi mdi-upload" disabled>Upload</button>
+        <button type="button" id="filesBtn" class="mdi mdi-plus-box">Add files</button>
+        <button type="button" id="foldersBtn" class="mdi mdi-plus-box-multiple">Add folders</button>
+        <button type="button" id="uploadBtn" class="mdi mdi-upload" disabled>Upload</button>
     </p>
+    
+    <input id="filesDiag" style="display: none;" type="file" multiple=true>
+    <input id="foldersDiag" style="display: none;" type="file" multiple=true webkitdirectory=true>
+    <script>
+        const fileList = document.getElementById('fileList');
+        const filesBtn = document.getElementById('filesBtn');
+        const foldersBtn = document.getElementById('foldersBtn');
+        const filesDiag = document.getElementById('filesDiag');
+        const foldersDiag = document.getElementById('foldersDiag');
+        const uploadBtn = document.getElementById('uploadBtn');
+        let files = Array();
+        
+        function renderFile(f) {
+            files.push(f);
+            uploadBtn.disabled = false;
+            let row = fileList.appendChild(document.createElement('tr'));
+            row.appendChild(document.createElement('td')).innerText = f.webkitRelativePath || f.name;
+            row.appendChild(document.createElement('td')).innerText = Math.round(f.size / 1024 * 100) / 100 + 'KiB';
+            let actionTd = row.appendChild(document.createElement('td'));
+            actionTd.classList.add('actions');
+            let delBtn = actionTd.appendChild(document.createElement('button'));
+            delBtn.type = 'button';
+            delBtn.classList.add('mdi', 'mdi-delete');
+            delBtn.addEventListener('click', () => {
+                row.remove();
+                files = files.filter(v => { return v != f;});
+                if(!files.length)
+                    uploadBtn.disabled = true;
+            });
+        }
+        
+        //Register event handlers
+        filesBtn.addEventListener('click', () => filesDiag.click());
+        foldersBtn.addEventListener('click', () => foldersDiag.click());
+        filesDiag.addEventListener('change', () => {
+            for(f of filesDiag.files)
+                renderFile(f);
+        });
+        foldersDiag.addEventListener('change', () => {
+            for(f of foldersDiag.files)
+                renderFile(f);
+            console.log(foldersDiag.files);
+        });
+    </script>
 {% endblock %}
