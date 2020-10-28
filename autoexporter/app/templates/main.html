@@ -2,5 +2,6 @@
 
 {% block root %}
     <h1>MAIN</h1>
+    <a href="{{ url_for('logout') }}">Logout</a>
     {% block main %}{% endblock %}
 {% endblock %}
