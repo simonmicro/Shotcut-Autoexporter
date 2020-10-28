@@ -56,15 +56,19 @@ def login():
 @app.route('/delete')
 @login_required
 def delete():
-    flash('TODO')
-    flash('delete')
+    flash('TODO: delete')
+    return redirect('list')
+    
+@app.route('/log')
+@login_required
+def log():
+    flash('TODO: log')
     return redirect('list')
     
 @app.route('/download')
 @login_required
 def download():
-    flash('TODO')
-    flash('download')
+    flash('TODO: download')
     return redirect('list')
 
 @app.route('/logout')

@@ -18,11 +18,11 @@ a {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgb(100, 100, 100);
+    background: rgb(80, 80, 80);
     box-shadow: 0 0.5em 0.5em lightgrey;
     padding: 0.3em;
     margin-bottom: 2em;
-    color: lightgrey;
+    color: rgb(240, 240, 240);
 }
 
 #main-header > .spacer {
@@ -44,6 +44,28 @@ table {
     border-collapse: collapse;
 }
 
+th {
+    color: rgb(40, 40, 40);
+    font-size: 1.2em;
+}
+
 td {
     border-bottom: 0.1em solid grey;
+}
+
+tr {
+    height: 3em;
+}
+
+tr > td:last-child {
+    text-align: right;
+}
+
+td.actions > a, td.actions > button {
+    font-size: 1.4em;
+    padding: 0.2em
+}
+
+table {
+    width: 100%;
 }

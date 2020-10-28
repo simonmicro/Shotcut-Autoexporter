@@ -4,9 +4,6 @@
     <script>
         console.log('UPLOAD');
     </script>
-
-    <button type="button">Add file</button>
-    <button type="button">Add folder</button>
     
     <table id="project-list">
         <thead>
@@ -19,10 +16,19 @@
             <tr>
                 <td>Project.mtl</td>
                 <td>500MB</td>
-                <td><button type="button">X</button></td>
+                <td class="actions"><button type="button" class="mdi mdi-delete"></button></td>
+            </tr>
+            <tr>
+                <td>Project.jpg</td>
+                <td>12.4MB</td>
+                <td class="actions"><button type="button" class="mdi mdi-delete"></button></td>
             </tr>
         </tbody>
     </table>
     
-    <button type="button" disabled>Upload</button>
+    <p>
+        <button type="button" class="mdi mdi-plus-box">Add file</button>
+        <button type="button" class="mdi mdi-plus-box-multiple">Add folder</button>
+        <button type="button" class="mdi mdi-upload" disabled>Upload</button>
+    </p>
 {% endblock %}

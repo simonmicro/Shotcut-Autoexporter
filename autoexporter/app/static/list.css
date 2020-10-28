@@ -1,20 +1,30 @@
-#project-list {
-    width: 100%;
-}
-
-tr > td:first-child {
+#project-list tr > td:first-child {
     width: 10%;
     white-space: nowrap;
 }
 
-tr > td:last-child {
-    text-align: right;
-}
-
-td > progress {
+#project-list progress {
     width: 100%;
 }
 
-td {
+#project-list td {
     padding: 0.2em 1em;
+}
+
+#project-list tr.status-queued {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+#project-list tr.status-working {
+    background: rgba(0, 0, 180, 0.3);
+}
+
+#project-list tr.status-success {
+    background: rgba(0, 140, 0, 0.75);
+    color: white;
+}
+
+#project-list tr.status-failed {
+    background: rgba(220, 0, 0, 0.8);
+    color: white;
 }
