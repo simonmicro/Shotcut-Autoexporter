@@ -1,0 +1,14 @@
+#flash {
+    background: rgba(255, 80, 80, 0.2);
+    border-radius: 0.5em;
+    border: 0.1em solid darkred;
+    margin: 1em;
+    color: darkred;
+    text-shadow: 0 0 0.2em grey;
+    letter-spacing: 0.1em;
+    box-shadow: 0.3em 0.3em 0.3em lightgrey;
+}
+
+#flash > ul {
+    list-style: none;
+}

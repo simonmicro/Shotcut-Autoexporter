@@ -1,0 +1,49 @@
+body {
+    margin: 0;
+}
+
+.mdi {
+    font-size: 1.2em;
+}
+
+a {
+    color: unset;
+    text-decoration: none;
+}
+
+#main-header {
+    position: sticky;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgb(100, 100, 100);
+    box-shadow: 0 0.5em 0.5em lightgrey;
+    padding: 0.3em;
+    margin-bottom: 2em;
+    color: lightgrey;
+}
+
+#main-header > .spacer {
+    flex-grow: 1;
+}
+
+#main-header > * {
+    padding: 0 0.5em;
+}
+
+#main-header-title {
+    font-family: "Roboto";
+    font-size: 1.6em;
+    letter-spacing: -0.08em;
+    color: white;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+    border-bottom: 0.1em solid grey;
+}

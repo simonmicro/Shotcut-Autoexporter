@@ -1,0 +1,20 @@
+#project-list {
+    width: 100%;
+}
+
+tr > td:first-child {
+    width: 10%;
+    white-space: nowrap;
+}
+
+tr > td:last-child {
+    text-align: right;
+}
+
+td > progress {
+    width: 100%;
+}
+
+td {
+    padding: 0.2em 1em;
+}
