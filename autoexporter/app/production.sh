@@ -1,1 +1,1 @@
-waitress-serve --call 'fApp:create_app'
+waitress-serve --call 'run:getApp'

@@ -1,9 +1,10 @@
 from app import fApp
 from app import login
 
-print('THIS IS AN TECHNICAL DEMO - DO NOT USE IN PRODUCTION UNTIL THIS MESSAGE DISAPPEARS!')
+# TODO rename fApp back to app and rename module dir to project name
+print('THIS IS WIP - DO NOT USE IN PRODUCTION UNTIL THIS MESSAGE DISAPPEARS!')
 
-def init():
+def getApp():
     return fApp
 
 def start():
@@ -11,5 +12,3 @@ def start():
 
 if __name__ == '__main__':
     start()
-
-# TODO rename fApp back to app and rename module dir to project name
