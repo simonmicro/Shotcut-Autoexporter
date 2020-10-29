@@ -45,6 +45,7 @@ schedule.every(10).seconds.do(doWork)
 
 def bgWorker():
     global run_threads
+    sleeptime = 2
     while run_threads:
         if sleeptime > 0:
             time.sleep(sleeptime)
