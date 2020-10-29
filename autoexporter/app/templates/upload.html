@@ -64,6 +64,7 @@
         });
         uploadBtn.addEventListener('click', () => {
             //Prepare the upload...
+            uploadBtn.innerText = 'Preparing...';
             //Prepare the path for every file...
             let pathMap = new Map();
             for(fileData of files)
@@ -106,7 +107,8 @@
                 return;
             }
             //Start the upload for every file...
-            function uploadFile(fileData, fullPath, projectName) {
+            const url = new URL(window.location);
+            function uploadFile(fileData, fullPath, uploadId) {
                 fileData.row.lastChild.firstChild.remove(); //remove the delete button
                 let progressBar = fileData.row.lastChild.appendChild(document.createElement('progress')); //add a progressbar instead
                 progressBar.max = 1;
@@ -127,20 +129,37 @@
                     xhr.addEventListener('load', resolve);
                     xhr.addEventListener('error', error);
                     xhr.addEventListener('abort', error);
-                    let url = new URL(window.location);
                     xhr.open('POST', url);
                     let fD = new FormData();
                     fD.append('path', fullPath);
-                    fD.append('project', projectName);
+                    fD.append('id', uploadId);
                     fD.append('file', fileData.file);
                     xhr.send(fD);
                 });
             }
+            let uploadId = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 16);
             let promises = Array();
             for(let [fileData, fullPath] of pathMap)
-                promises.push(uploadFile(fileData, fullPath, foundProjectFile.file.name.substr(-4)));
+                promises.push(uploadFile(fileData, fullPath, uploadId));
             //When done -> Goto list
-            Promise.all(promises).then(() => window.location = '{{ url_for("list") }}').catch(e => console.log('error', e));
+            filesBtn.disabled = true;
+            foldersBtn.disabled = true;
+            uploadBtn.disabled = true;
+            uploadBtn.innerText = 'Uploading...';
+            Promise.all(promises).then(() => {
+                let xhr = new XMLHttpRequest();
+                xhr.addEventListener('load', () => {window.location = '{{ url_for("list") }}'});
+                xhr.addEventListener('readystatechange', () => {
+                    if(xhr.readyState == 4 && xhr.status != 200)
+                        alert('Something went wrong: ' + xhr.responseText);
+                });
+                xhr.open('POST', url);
+                let fD = new FormData();
+                fD.append('finish', true);
+                fD.append('id', uploadId);
+                xhr.send(fD);
+                uploadBtn.innerText = 'Finishing...';
+            }).catch(e => console.log('error', e));
         });
     </script>
 {% endblock %}

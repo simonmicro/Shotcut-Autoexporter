@@ -7,21 +7,25 @@ from app.forms import LoginForm
 
 projects = [
     {
+        'id':'ydnltizahg',
         'name':'Queued',
         'progress':None,
         'status':STATUS_QUEUED
     },
     {
+        'id':'ydnltizfhg',
         'name':'In progress',
         'progress':0.6,
         'status':STATUS_WORKING
     },
     {
+        'id':'ydnltiashg',
         'name':'Success',
         'progress':None,
         'status':STATUS_SUCCESS
     },
     {
+        'id':'ydgltizbhg',
         'name':'Failed',
         'progress':None,
         'status':STATUS_FAILURE
@@ -87,8 +91,14 @@ def list():
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
-    if request.method == 'POST' and 'file' in request.files and 'path' in request.form and 'project' in request.form:
-        flash('TODO: upload')
-        return 'OK'
+    if request.method == 'POST':
+        if 'file' in request.files and 'path' in request.form and 'id' in request.form:
+            flash('TODO: upload')
+            return 'OK'
+        elif 'finish' in request.form and 'id' in request.form:
+            flash('TODO: finish')
+            return 'OK'
+        else:
+            return 'Incomplete upload/finish request!', 400
     # TODO: Add file, Add folder, Upload
     return render_template('upload.html', title='UPLOAD')
