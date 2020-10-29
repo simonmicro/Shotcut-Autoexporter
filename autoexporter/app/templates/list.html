@@ -18,6 +18,7 @@
                 <td class="actions">
                     {% if project.getStatus() == 1 %}<progress max="1" value="{{ project.getProgress() }}"> {{ project.getProgress() * 100 }}% </progress>{% endif %}
                     {% if project.getStatus() == 2 %}<a class="mdi mdi-download" href="{{ url_for('download', id=project.getId()) }}"></a>{% endif %}
+                    {% if project.getStatus() == 3 %}<a class="mdi mdi-reload" href="{{ url_for('retry', id=project.getId()) }}"></a>{% endif %}
                     {% if project.getStatus() == 2 or project.getStatus() == 3 %}<a class="mdi mdi-text-box-search-outline" href="{{ url_for('log', id=project.getId()) }}"></a>{% endif %}
                     {% if project.getStatus() != 1 %}<a class="mdi mdi-delete" href="{{ url_for('delete', id=project.getId()) }}"></a>{% endif %}
                 </td>

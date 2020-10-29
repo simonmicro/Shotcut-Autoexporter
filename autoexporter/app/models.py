@@ -4,6 +4,8 @@ import werkzeug
 import logging
 from flask_login import UserMixin
 import app.config
+import xml.dom.minidom
+import subprocess
 
 import time
 import random # TODO TEMP
@@ -62,8 +64,22 @@ class Project():
             logging.info('Project id ' + self.id + ' status change: ' + str(self.status) + ' -> ' + str(status))
         self.status = status
         if self.status == app.config.STATUS_QUEUED:
-            # TODO extract .mlt filename now
-            self.name = 'TODO: Extract name'
+            foundMLT = False
+            for fname in os.listdir(self.getDir()):
+                if os.path.splitext(fname)[1].lower() == '.mlt':
+                    self.name = os.path.splitext(fname)[0]
+                    foundMLT = True
+            if not foundMLT:
+                self.setStatus(app.config.STATUS_FAILURE)
+    def getLog(self):
+        logFilePath = os.path.join(self.getDir(), 'LOG')
+        if os.path.isfile(logFilePath):
+            lines = None
+            with open(logFilePath) as f:
+                lines = f.readlines()
+            return lines
+        else:
+            return None
         
     def delete(self):
         shutil.rmtree(self.getDir())
@@ -73,5 +89,27 @@ class Project():
     def run(self):
         logging.info('Project id ' + self.id + ' running...')
         self.setStatus(app.config.STATUS_WORKING)
-        time.sleep(30)
-        self.setStatus(app.config.STATUS_SUCCESS)
+        mltPath = os.path.join(self.getDir(), self.name + '.mlt')
+        # Load the doc
+        xmlFile = xml.dom.minidom.parse(mltPath)
+        items = xmlFile.getElementsByTagName('property')
+        # Replace all path to relative
+        for item in items:
+            if item.getAttribute('name') == 'resource':
+                item.firstChild.nodeValue = os.path.basename(item.firstChild.nodeValue)
+        # Write modified project file back
+        correctedPojectFile = os.path.splitext(mltPath)[0] + '.relative.mlt'
+        out = open(os.path.join(self.getDir(), correctedPojectFile), 'w')
+        xmlFile.writexml(out)
+        out.close()
+        logging.debug('Prepared ' + self.id + ' -> starting export...')
+        # Run export command with log file...
+        log = open(os.path.join(self.getDir(), 'LOG'), 'w')
+        result = subprocess.run([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.name + '.mp4', correctedPojectFile], stderr=log, stdout=log, cwd=self.getDir())
+        log.close()
+        # Remove modified project file again...
+        os.remove(os.path.join(self.getDir(), correctedPojectFile))
+        if result.returncode == 0:
+            self.setStatus(app.config.STATUS_SUCCESS)
+        else:
+            self.setStatus(app.config.STATUS_FAILURE)

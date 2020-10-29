@@ -8,6 +8,8 @@ STATUS_WORKING = 1
 STATUS_SUCCESS = 2
 STATUS_FAILURE = 3
 
+shotcutQmelt = os.path.join(os.getcwd(), 'shotcut', 'qmelt')
+
 dirConfig = {
     STATUS_UPLOAD: tempfile.mkdtemp(),
     STATUS_QUEUED: os.path.join(os.getcwd(), 'data', 'queued'),

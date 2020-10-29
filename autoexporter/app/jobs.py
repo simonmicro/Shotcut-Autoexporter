@@ -32,9 +32,12 @@ schedule.every().day.do(doCleanup)
 def doWork():
     jLog.debug('Working on queue...')
     for p in app.models.projects:
-        jLog.debug(p.getName() + str(p.getStatus()))
         if p.getStatus() == app.config.STATUS_QUEUED:
-            p.run()
+            try:
+                p.run()
+            except Exception as e:
+                p.setStatus(app.config.STATUS_FAILURE)
+                jLog.error('Project execution failure: ' + str(e))
 schedule.every(10).seconds.do(doWork)
 
 # Worker-thread-model
@@ -47,16 +50,20 @@ def bgWorker():
         sleeptime = schedule.idle_seconds()
         if sleeptime > 0:
             time.sleep(sleeptime)
-    jLog.info('Jobs execution stopped!')
 
 bgThread = threading.Thread(target=bgWorker)
 bgThread.start()
 
 def stopAllJobs():
     global run_threads
-    logging.info('Shutting down jobs...')
-    run_threads = False
-    bgThread.join() 
+    if run_threads:
+        jLog.info('Shutting down jobs...')
+        run_threads = False
+        bgThread.join()
+    else:
+        jLog.error('Shutdown already in progress - killing!')
+        exit(0)
+    jLog.info('Jobs shutdowned.')
 atexit.register(stopAllJobs)
 signal.signal(signal.SIGINT, lambda a, b : stopAllJobs())
-signal.signal(signal.SIGTERM, lambda a, b : stopAllJobs())
+#signal.signal(signal.SIGTERM, lambda a, b : stopAllJobs())

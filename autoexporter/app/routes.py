@@ -45,10 +45,33 @@ def delete():
             return 'Project not found', 404
     return redirect('list')
     
+@fApp.route('/retry')
+@login_required
+def retry():
+    pid = request.args.get('id')
+    if pid:
+        p = Project.get(pid)
+        if p:
+            p.setStatus(app.config.STATUS_QUEUED)
+            flash('Project "' + p.getName() + '" requeued.')
+        else:
+            return 'Project not found', 404
+    return redirect('list')
+    
 @fApp.route('/log')
 @login_required
 def log():
-    flash('TODO: log')
+    pid = request.args.get('id')
+    if pid:
+        p = Project.get(pid)
+        if p:
+            log = p.getLog()
+            if log:
+                return str(log)
+            else:
+                flash('Log file is not available!')
+        else:
+            return 'Project not found', 404
     return redirect('list')
     
 @fApp.route('/download')
