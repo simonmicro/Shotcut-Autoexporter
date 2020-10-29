@@ -2,17 +2,11 @@ import os
 import shutil
 import werkzeug
 from flask_login import UserMixin
-from app.config import dirConfig
+import app.config
 
 import random #TEMP
 
 projects = []
-
-STATUS_UPLOAD = 4
-STATUS_QUEUED = 0
-STATUS_WORKING = 1
-STATUS_SUCCESS = 2
-STATUS_FAILURE = 3
 
 class User(UserMixin):
     def __init__(self):
@@ -44,19 +38,10 @@ class Project():
     def getDir(self, status = None):
         if status == None:
             status = self.status
-        if status == STATUS_UPLOAD:
-            return os.path.join(dirConfig['upload'], self.id)
-        elif status == STATUS_QUEUED:
+        if status == app.config.STATUS_QUEUED:
             # TODO extract .mlt filename now
-            return os.path.join(dirConfig['queue'], self.id)
-        elif status == STATUS_WORKING:
-            return os.path.join(dirConfig['working'], self.id)
-        elif status == STATUS_SUCCESS:
-            return os.path.join(dirConfig['success'], self.id)
-        elif status == STATUS_FAILURE:
-            return os.path.join(dirConfig['failure'], self.id)
-        else:
-            raise Exception('Unsopported status')
+            pass
+        return os.path.join(app.config.dirConfig[app.config.STATUS_UPLOAD], self.id)
         
     def setStatus(self, status):
         if self.status == status:
@@ -82,8 +67,8 @@ class Project():
         
         
 projects = [
-    Project('ydnltizahg', STATUS_QUEUED),
-    Project('ydnltizfhg', STATUS_WORKING),
-    Project('ydnltiashg', STATUS_SUCCESS),
-    Project('ydgltizbhg', STATUS_FAILURE)
+    Project('ydnltizahg', app.config.STATUS_QUEUED),
+    Project('ydnltizfhg', app.config.STATUS_WORKING),
+    Project('ydnltiashg', app.config.STATUS_SUCCESS),
+    Project('ydgltizbhg', app.config.STATUS_FAILURE)
 ]

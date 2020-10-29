@@ -1,19 +1,19 @@
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_user, logout_user, login_required
-from app import app
-from app.config import dirConfig
-from app.models import projects, User, Project, STATUS_UPLOAD, STATUS_QUEUED, STATUS_WORKING, STATUS_SUCCESS, STATUS_FAILURE
+from app import fApp
+import app.config
+from app.models import projects, User, Project
 from app.forms import LoginForm
 import os
 import logging
 import werkzeug
 
-@app.route('/')
+@fApp.route('/')
 def index():
     # TODO: ?
     return redirect(url_for('login'))
     
-@app.route('/login', methods=['GET', 'POST'])
+@fApp.route('/login', methods=['GET', 'POST'])
 def login():
     # TODO: Login, when ip outside of range: Access denied
     if current_user.is_authenticated:
@@ -33,43 +33,43 @@ def login():
         return redirect(next_page)
     return render_template('login.html', title='LOGIN', form=form)
     
-@app.route('/delete')
+@fApp.route('/delete')
 @login_required
 def delete():
     flash('TODO: delete')
     return redirect('list')
     
-@app.route('/log')
+@fApp.route('/log')
 @login_required
 def log():
     flash('TODO: log')
     return redirect('list')
     
-@app.route('/download')
+@fApp.route('/download')
 @login_required
 def download():
     flash('TODO: download')
     return redirect('list')
 
-@app.route('/logout')
+@fApp.route('/logout')
 @login_required
 def logout():
     flash('Bye!')
     logout_user()
     return redirect(url_for('login'))
 
-@app.route('/list')
+@fApp.route('/list')
 @login_required
 def list():
     # TODO: List current projects (queued, in progress, success, failure), Logout, Add project
     return render_template('list.html', title='LIST', projects=projects)
     
-@app.route('/upload', methods=['GET', 'POST'])
+@fApp.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
     if request.method == 'POST':
         if 'id' in request.form:
-            project = Project(request.form['id'], STATUS_UPLOAD)
+            project = Project(request.form['id'], app.config.STATUS_UPLOAD)
             if 'file' in request.files and 'path' in request.form:
                 # The following just resolves the given path to the new project dir root of the os
                 absPathInProject = os.path.relpath(os.path.normpath(os.path.join('/', request.form['path'])), '/')
@@ -82,7 +82,7 @@ def upload():
                 return 'OK'
             elif 'finish' in request.form:
                 try:
-                    project.setStatus(STATUS_QUEUED)
+                    project.setStatus(app.config.STATUS_QUEUED)
                 except Exception as e:
                     return e, 500
                 projects.append(project)
