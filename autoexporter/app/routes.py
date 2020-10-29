@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, send_file
 from flask_login import current_user, login_user, logout_user, login_required
 from app import fApp
 import app.config
@@ -42,7 +42,7 @@ def delete():
             p.delete()
             flash('Project "' + p.getName() + '" deleted.')
         else:
-            return 'Project not found', 404
+            flash('Project not found')
     return redirect('list')
     
 @fApp.route('/retry')
@@ -55,7 +55,7 @@ def retry():
             p.setStatus(app.config.STATUS_QUEUED)
             flash('Project "' + p.getName() + '" requeued.')
         else:
-            return 'Project not found', 404
+            flash('Project not found')
     return redirect('list')
     
 @fApp.route('/log')
@@ -67,17 +67,30 @@ def log():
         if p:
             log = p.getLog()
             if log:
-                return str(log)
+                returnme = ''
+                for line in log:
+                    returnme += line
+                return '<pre>' + returnme + '</pre>'
             else:
                 flash('Log file is not available!')
         else:
-            return 'Project not found', 404
+            flash('Project not found')
     return redirect('list')
     
 @fApp.route('/download')
 @login_required
 def download():
-    flash('TODO: download')
+    pid = request.args.get('id')
+    if pid:
+        p = Project.get(pid)
+        if p:
+            result = p.getResultPath()
+            if result:
+                return send_file(result, as_attachment=True, attachment_filename=p.getName() + os.path.splitext(result)[1])
+            else:
+                flash('Log file is not available!')
+        else:
+            flash('Project not found')
     return redirect('list')
 
 @fApp.route('/logout')

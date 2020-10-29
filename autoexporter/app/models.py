@@ -6,6 +6,7 @@ from flask_login import UserMixin
 import app.config
 import xml.dom.minidom
 import subprocess
+import re
 
 import time
 import random # TODO TEMP
@@ -45,7 +46,15 @@ class Project():
         return self.status
         
     def getProgress(self):
-        return random.random()
+        value = None
+        log = self.getLog()
+        for line in log[::-1]:
+            m = re.search(r'\d+$', line)
+            # if the string ends in digits m will be a Match object, or None otherwise.
+            if m is not None:
+                value = int(m.group())
+                break
+        return value
         
     def getDir(self, status = None):
         if status == None:
@@ -71,6 +80,7 @@ class Project():
                     foundMLT = True
             if not foundMLT:
                 self.setStatus(app.config.STATUS_FAILURE)
+                
     def getLog(self):
         logFilePath = os.path.join(self.getDir(), 'LOG')
         if os.path.isfile(logFilePath):
@@ -78,6 +88,12 @@ class Project():
             with open(logFilePath) as f:
                 lines = f.readlines()
             return lines
+        else:
+            return None
+            
+    def getResultPath(self):
+        if self.status == app.config.STATUS_SUCCESS:
+            return os.path.join(self.getDir(), self.id + '.mp4')
         else:
             return None
         
@@ -105,7 +121,7 @@ class Project():
         logging.debug('Prepared ' + self.id + ' -> starting export...')
         # Run export command with log file...
         log = open(os.path.join(self.getDir(), 'LOG'), 'w')
-        result = subprocess.run([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.name + '.mp4', correctedPojectFile], stderr=log, stdout=log, cwd=self.getDir())
+        result = subprocess.run([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', correctedPojectFile], stderr=log, stdout=log, cwd=self.getDir())
         log.close()
         # Remove modified project file again...
         os.remove(os.path.join(self.getDir(), correctedPojectFile))
