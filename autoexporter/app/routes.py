@@ -106,7 +106,12 @@ def list():
     if not len(projects):
         flash('No projects found, please upload one!')
         return redirect(url_for('upload'))
-    return render_template('list.html', title='LIST', projects=projects)
+    autoreload = False
+    for p in projects:
+        if p.getStatus() == app.config.STATUS_QUEUED or p.getStatus() == app.config.STATUS_WORKING:
+            autoreload = True
+            break
+    return render_template('list.html', title='LIST', projects=projects, autoreload=autoreload)
     
 @fApp.route('/upload', methods=['GET', 'POST'])
 @login_required

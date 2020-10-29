@@ -2,7 +2,9 @@
 
 {% block main_head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='list.css') }}">
+    {% if autoreload %}
     <meta http-equiv="refresh" content="10">
+    {% endif %}
 {% endblock %}
 
 {% block main %}

@@ -114,17 +114,14 @@ class Project():
             if item.getAttribute('name') == 'resource':
                 item.firstChild.nodeValue = os.path.basename(item.firstChild.nodeValue)
         # Write modified project file back
-        correctedPojectFile = os.path.splitext(mltPath)[0] + '.relative.mlt'
-        out = open(os.path.join(self.getDir(), correctedPojectFile), 'w')
+        out = open(os.path.join(self.getDir(), mltPath), 'w')
         xmlFile.writexml(out)
         out.close()
         logging.debug('Prepared ' + self.id + ' -> starting export...')
         # Run export command with log file...
         log = open(os.path.join(self.getDir(), 'LOG'), 'w')
-        result = subprocess.run([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', correctedPojectFile], stderr=log, stdout=log, cwd=self.getDir())
+        result = subprocess.run([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', mltPath], stderr=log, stdout=log, cwd=self.getDir())
         log.close()
-        # Remove modified project file again...
-        os.remove(os.path.join(self.getDir(), correctedPojectFile))
         if result.returncode == 0:
             self.setStatus(app.config.STATUS_SUCCESS)
         else:
