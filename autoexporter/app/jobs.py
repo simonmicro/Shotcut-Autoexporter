@@ -46,11 +46,11 @@ schedule.every(10).seconds.do(doWork)
 def bgWorker():
     global run_threads
     while run_threads:
+        if sleeptime > 0:
+            time.sleep(sleeptime)
         jLog.info('Running jobs...')
         schedule.run_pending()
         sleeptime = schedule.idle_seconds()
-        if sleeptime > 0:
-            time.sleep(sleeptime)
 
 bgThread = threading.Thread(target=bgWorker)
 bgThread.start()
@@ -61,10 +61,10 @@ def stopAllJobs():
         jLog.info('Shutting down jobs (this will may take a while)...')
         run_threads = False
         bgThread.join()
+        jLog.info('Jobs shutdowned.')
     else:
-        jLog.error('Shutdown already in progress - killing!')
-        exit(0)
-    jLog.info('Jobs shutdowned.')
+        jLog.error('Shutdown already in progress - killing!') # ...just proceed to the exit!
+    exit(0)
 atexit.register(stopAllJobs)
 signal.signal(signal.SIGINT, lambda a, b : stopAllJobs())
 #signal.signal(signal.SIGTERM, lambda a, b : stopAllJobs())
