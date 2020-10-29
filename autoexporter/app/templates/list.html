@@ -13,13 +13,13 @@
 
         <tbody>
             {% for project in projects %}
-            <tr class="status-{% if project.status == 0 %}queued{% elif project.status == 1 %}working{% elif project.status == 2 %}success{% elif project.status == 3 %}failed{% endif %}">
-                <td>{{ project.name }}</td>
+            <tr class="status-{% if project.getStatus() == 0 %}queued{% elif project.getStatus() == 1 %}working{% elif project.getStatus() == 2 %}success{% elif project.getStatus() == 3 %}failed{% endif %}">
+                <td>{{ project.getName() }}</td>
                 <td class="actions">
-                    {% if project.status == 1 %}<progress max="1" value="{{ project.progress }}"> {{ project.progress * 100 }}% </progress>{% endif %}
-                    {% if project.status == 2 %}<a class="mdi mdi-download" href="{{ url_for('download', name=project.name) }}"></a>{% endif %}
-                    {% if project.status == 2 or project.status == 3 %}<a class="mdi mdi-text-box-search-outline" href="{{ url_for('log', name=project.name) }}"></a>{% endif %}
-                    {% if project.status != 1 %}<a class="mdi mdi-delete" href="{{ url_for('delete', name=project.name) }}"></a>{% endif %}
+                    {% if project.getStatus() == 1 %}<progress max="1" value="{{ project.getProgress() }}"> {{ project.getProgress() * 100 }}% </progress>{% endif %}
+                    {% if project.getStatus() == 2 %}<a class="mdi mdi-download" href="{{ url_for('download', name=project.getId()) }}"></a>{% endif %}
+                    {% if project.getStatus() == 2 or project.getStatus() == 3 %}<a class="mdi mdi-text-box-search-outline" href="{{ url_for('log', name=project.getId()) }}"></a>{% endif %}
+                    {% if project.getStatus() != 1 %}<a class="mdi mdi-delete" href="{{ url_for('delete', name=project.getId()) }}"></a>{% endif %}
                 </td>
             </tr>
             {% endfor %}

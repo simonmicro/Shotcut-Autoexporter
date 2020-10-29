@@ -2,39 +2,11 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app
 from app.config import dirConfig
-from app.models import User, STATUS_QUEUED, STATUS_WORKING, STATUS_SUCCESS, STATUS_FAILURE
+from app.models import projects, User, Project, STATUS_UPLOAD, STATUS_QUEUED, STATUS_WORKING, STATUS_SUCCESS, STATUS_FAILURE
 from app.forms import LoginForm
 import os
-import shutil
 import logging
 import werkzeug
-
-projects = [
-    {
-        'id':'ydnltizahg',
-        'name':'Queued',
-        'progress':None,
-        'status':STATUS_QUEUED
-    },
-    {
-        'id':'ydnltizfhg',
-        'name':'In progress',
-        'progress':0.6,
-        'status':STATUS_WORKING
-    },
-    {
-        'id':'ydnltiashg',
-        'name':'Success',
-        'progress':None,
-        'status':STATUS_SUCCESS
-    },
-    {
-        'id':'ydgltizbhg',
-        'name':'Failed',
-        'progress':None,
-        'status':STATUS_FAILURE
-    }
-]
 
 @app.route('/')
 def index():
@@ -96,28 +68,28 @@ def list():
 @login_required
 def upload():
     if request.method == 'POST':
-        if 'file' in request.files and 'path' in request.form and 'id' in request.form:
-            # The following just resolves the given path to the new project dir root of the os
-            projectId = werkzeug.utils.secure_filename(request.form['id'])
-            absPathInProject = os.path.relpath(os.path.normpath(os.path.join('/', request.form['path'])), '/')
-            absPathInSystem = os.path.join(dirConfig['upload'], projectId, absPathInProject)
-            # Make in-project subdirs...
-            os.makedirs(os.path.split(absPathInSystem)[0], exist_ok=True)
-            # And save the file itself!
-            request.files['file'].save(absPathInSystem)
-            logging.info('File uploaded for project id ' + projectId + ' to ' + absPathInSystem)
-            return 'OK'
-        elif 'finish' in request.form and 'id' in request.form:
-            projectId = werkzeug.utils.secure_filename(request.form['id'])
-            absProjectPathInUpload = os.path.join(dirConfig['upload'], projectId)
-            if not os.path.isdir(absProjectPathInUpload):
-                return 'Project id not found', 404
-            absProjectPathInQueue = os.path.join(dirConfig['queue'], projectId)
-            if os.path.isdir(absProjectPathInQueue):
-                return 'Project id already finished', 400
-            shutil.move(absProjectPathInUpload, absProjectPathInQueue)
-            logging.info('Upload complete for project id ' + projectId)
-            return 'OK'
+        if 'id' in request.form:
+            project = Project(request.form['id'], STATUS_UPLOAD)
+            if 'file' in request.files and 'path' in request.form:
+                # The following just resolves the given path to the new project dir root of the os
+                absPathInProject = os.path.relpath(os.path.normpath(os.path.join('/', request.form['path'])), '/')
+                absPathInSystem = os.path.join(project.getDir(), absPathInProject)
+                # Make in-project subdirs...
+                os.makedirs(os.path.split(absPathInSystem)[0], exist_ok=True)
+                # And save the file itself!
+                request.files['file'].save(absPathInSystem)
+                logging.info('File uploaded for project id ' + project.getId() + ' to ' + absPathInSystem)
+                return 'OK'
+            elif 'finish' in request.form:
+                try:
+                    project.setStatus(STATUS_QUEUED)
+                except Exception as e:
+                    return e, 500
+                projects.append(project)
+                logging.info('Upload complete for project id ' + project.getId())
+                return 'OK'
+            else:
+                return 'Incomplete upload/finish request!', 400
         else:
             return 'Incomplete upload/finish request!', 400
     # TODO: Add file, Add folder, Upload
