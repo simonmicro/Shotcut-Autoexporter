@@ -102,7 +102,7 @@
                     break;
                 }
             if(!foundProjectFile) {
-                alert('Could not find any .mlt file in root folder' + (commonDir ? ' also not in the common subdir ' + commonDir : ' additionally no common subdir was found') + '!');
+                alert('Could not find any .mlt file in root folder' + (commonDir ? ' (and also not in the common subdir "' + commonDir  + '")': '( additionally no common subdir was found)') + '!');
                 return;
             }
             //Start the upload for every file...

@@ -1,3 +1,65 @@
+table {
+    border-collapse: collapse;
+}
+
+th {
+    color: rgb(40, 40, 40);
+    font-size: 1.2em;
+}
+
+td {
+    border-bottom: 0.1em solid grey;
+}
+
+tr {
+    height: 3em;
+}
+
+tr > td:last-child {
+    text-align: right;
+}
+
+td.actions > a, td.actions > button {
+    font-size: 1.4em;
+    padding: 0.2em
+}
+
+table {
+    width: 100%;
+}
+
+#main-header {
+    position: sticky;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background: rgb(80, 80, 80);
+    box-shadow: 0 0.5em 0.5em lightgrey;
+    margin-bottom: 2em;
+    color: rgb(240, 240, 240);
+}
+
+#main-header > .spacer {
+    flex-grow: 1;
+}
+
+#main-header > * {
+    padding: 0 0.5em;
+}
+
+#main-header-title {
+    font-family: "Roboto";
+    font-size: 1.6em;
+    letter-spacing: -0.08em;
+    color: white;
+    padding: 0.3em 0.5em;
+    background: rgb(140, 180, 0);
+    text-shadow: 0.1em 0.1em 0.3em black;
+}
+
 #main {
     margin: 1em;
 }
