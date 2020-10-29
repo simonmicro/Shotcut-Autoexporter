@@ -84,8 +84,11 @@ def list():
     # TODO: List current projects (queued, in progress, success, failure), Logout, Add project
     return render_template('list.html', title='LIST', projects=projects)
     
-@app.route('/upload')
+@app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
+    if request.method == 'POST' and 'file' in request.files and 'path' in request.form:
+        flash('TODO: upload')
+        return 'OK'
     # TODO: Add file, Add folder, Upload
     return render_template('upload.html', title='UPLOAD')
