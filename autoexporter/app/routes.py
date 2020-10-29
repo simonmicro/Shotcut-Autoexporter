@@ -36,7 +36,14 @@ def login():
 @fApp.route('/delete')
 @login_required
 def delete():
-    flash('TODO: delete')
+    pid = request.args.get('id')
+    if pid:
+        p = Project.get(pid)
+        if p:
+            p.delete()
+            flash('Project "' + p.getName() + '" deleted.')
+        else:
+            return 'Project not found', 404
     return redirect('list')
     
 @fApp.route('/log')
@@ -61,7 +68,9 @@ def logout():
 @fApp.route('/list')
 @login_required
 def list():
-    # TODO: List current projects (queued, in progress, success, failure), Logout, Add project
+    if not len(projects):
+        flash('No projects found, please upload one!')
+        return redirect(url_for('upload'))
     return render_template('list.html', title='LIST', projects=projects)
     
 @fApp.route('/upload', methods=['GET', 'POST'])
@@ -84,7 +93,7 @@ def upload():
                 try:
                     project.setStatus(app.config.STATUS_QUEUED)
                 except Exception as e:
-                    return e, 500
+                    return str(e), 500
                 projects.append(project)
                 logging.info('Upload complete for project id ' + project.getId())
                 return 'OK'
@@ -92,5 +101,4 @@ def upload():
                 return 'Incomplete upload/finish request!', 400
         else:
             return 'Incomplete upload/finish request!', 400
-    # TODO: Add file, Add folder, Upload
     return render_template('upload.html', title='UPLOAD')

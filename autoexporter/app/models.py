@@ -1,6 +1,7 @@
 import os
 import shutil
 import werkzeug
+import logging
 from flask_login import UserMixin
 import app.config
 
@@ -23,6 +24,13 @@ class Project():
         self.status = status
         self.name = None
         
+    @staticmethod
+    def get(id):
+        for p in projects:
+            if p.getId() == id:
+                return p
+        return None
+        
     def getId(self):
         return self.id
         
@@ -38,10 +46,7 @@ class Project():
     def getDir(self, status = None):
         if status == None:
             status = self.status
-        if status == app.config.STATUS_QUEUED:
-            # TODO extract .mlt filename now
-            pass
-        return os.path.join(app.config.dirConfig[app.config.STATUS_UPLOAD], self.id)
+        return os.path.join(app.config.dirConfig[status], self.id)
         
     def setStatus(self, status):
         if self.status == status:
@@ -49,26 +54,17 @@ class Project():
         oldPath = self.getDir()
         newPath = self.getDir(status)
         if not os.path.isdir(oldPath):
-            raise Exception('Project id not found')
+            raise Exception('Project id ' + self.id + ' not found')
         if os.path.isdir(newPath):
-            raise Exception('Project id conflict')
+            raise Exception('Project id ' + self.id + ' conflict')
         shutil.move(oldPath, newPath)
+        logging.info('Project id ' + self.id + ' status change: ' + str(self.status) + ' -> ' + str(status))
         self.status = status
+        if status == app.config.STATUS_QUEUED:
+            # TODO extract .mlt filename now
+            pass
         
     def delete(self):
-        # TODO remove dir
-        pass
-        
-        
-        
-        
-        
-        
-        
-        
-projects = [
-    Project('ydnltizahg', app.config.STATUS_QUEUED),
-    Project('ydnltizfhg', app.config.STATUS_WORKING),
-    Project('ydnltiashg', app.config.STATUS_SUCCESS),
-    Project('ydgltizbhg', app.config.STATUS_FAILURE)
-]
+        shutil.rmtree(self.getDir())
+        projects.remove(self)
+        logging.info('Project id ' + self.id + ' deleted')

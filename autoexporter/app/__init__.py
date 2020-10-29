@@ -2,6 +2,7 @@ from flask import Flask
 from app.models import User
 from flask_login import LoginManager
 import os
+import time
 import logging
 import app.config
 import app.models
@@ -22,4 +23,14 @@ for status in app.config.dirConfig:
     for id in os.listdir(app.config.dirConfig[status]):
         app.models.projects.append(app.models.Project(id, status))
         
+for project in app.models.projects:
+    if project.getStatus() == app.config.STATUS_WORKING:
+        # When we restart the project is commonly also crashed -> requeue!
+        logging.warning('Export of ' + project.getId() + ' probably crashed -> requeuing')
+        project.setStatus(app.config.STATUS_QUEUED)
+
+# Load all the routes
 from app import routes
+
+# Execute the scheduled jobs...
+import app.jobs
