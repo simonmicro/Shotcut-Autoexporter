@@ -23,7 +23,7 @@ class User(UserMixin):
 class Project():
     def __init__(self, id, status):
         self.id = werkzeug.utils.secure_filename(id)
-        self.name = self.id
+        self.name = None
         self.status = None
         self.setStatus(status)
         
@@ -38,6 +38,8 @@ class Project():
         return self.id
         
     def getName(self):
+        if self.name == None:
+            self.searchName()
         return self.name
         
     def getStatus(self):
@@ -71,13 +73,16 @@ class Project():
             logging.info('Project id ' + self.id + ' status change: ' + str(self.status) + ' -> ' + str(status))
         self.status = status
         if self.status == app.config.STATUS_QUEUED:
-            foundMLT = False
-            for fname in os.listdir(self.getDir()):
-                if os.path.splitext(fname)[1].lower() == '.mlt':
-                    self.name = os.path.splitext(fname)[0]
-                    foundMLT = True
-            if not foundMLT:
-                self.setStatus(app.config.STATUS_FAILURE)
+                self.searchName()
+                
+    def searchName(self):
+        foundMLT = False
+        for fname in os.listdir(self.getDir()):
+            if os.path.splitext(fname)[1].lower() == '.mlt':
+                self.name = os.path.splitext(fname)[0]
+                foundMLT = True
+        if not foundMLT:
+            self.setStatus(app.config.STATUS_FAILURE)
                 
     def getLog(self):
         logFilePath = os.path.join(self.getDir(), 'LOG')
@@ -96,9 +101,12 @@ class Project():
             return None
         
     def delete(self):
-        shutil.rmtree(self.getDir())
-        projects.remove(self)
-        logging.info('Project id ' + self.id + ' deleted')
+        if self.status != app.config.STATUS_WORKING:
+            shutil.rmtree(self.getDir())
+            projects.remove(self)
+            logging.info('Project id ' + self.id + ' deleted')
+            return True
+        return False
         
     def run(self):
         logging.info('Project id ' + self.id + ' running...')

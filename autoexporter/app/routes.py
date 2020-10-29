@@ -39,8 +39,10 @@ def delete():
     if pid:
         p = Project.get(pid)
         if p:
-            p.delete()
-            flash('Project "' + p.getName() + '" deleted.')
+            if p.delete():
+                flash('Project "' + p.getName() + '" deleted.')
+            else:
+                flash('Project "' + p.getName() + '" could not be deleted!')
         else:
             flash('Project not found')
     return redirect('list')
@@ -72,7 +74,7 @@ def log():
                     returnme += line
                 return '<pre>' + returnme + '</pre>'
             else:
-                flash('Log file is not available!')
+                flash('Log file for project "' + p.getName() + '" is not available!')
         else:
             flash('Project not found')
     return redirect('list')
@@ -88,7 +90,7 @@ def download():
             if result:
                 return send_file(result, as_attachment=True, attachment_filename=p.getName() + os.path.splitext(result)[1])
             else:
-                flash('Log file is not available!')
+                flash('Download for project "' + p.getName() + '" is not available!')
         else:
             flash('Project not found')
     return redirect('list')
