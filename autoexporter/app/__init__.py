@@ -1,12 +1,16 @@
+import logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+
+import os
+import time
+import app.config
+import app.models
 from flask import Flask
 from app.models import User
 from flask_login import LoginManager
-import os
-import time
-import logging
-import app.config
-import app.models
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+
+# TODO rename fApp back to app and rename module dir to project name
+logging.warning('THIS IS WIP - DO NOT USE IN PRODUCTION UNTIL THIS MESSAGE DISAPPEARS!')
 
 # Init app
 fApp = Flask(__name__)

@@ -10,7 +10,6 @@ import werkzeug
 
 @fApp.route('/')
 def index():
-    # TODO: ?
     return redirect(url_for('login'))
     
 @fApp.route('/login', methods=['GET', 'POST'])
