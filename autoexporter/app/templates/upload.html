@@ -131,6 +131,7 @@
                     xhr.open('POST', url);
                     let fD = new FormData();
                     fD.append('path', fullPath);
+                    fD.append('project', projectName);
                     fD.append('file', fileData.file);
                     xhr.send(fD);
                 });

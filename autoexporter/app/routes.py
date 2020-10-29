@@ -87,7 +87,7 @@ def list():
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
-    if request.method == 'POST' and 'file' in request.files and 'path' in request.form:
+    if request.method == 'POST' and 'file' in request.files and 'path' in request.form and 'project' in request.form:
         flash('TODO: upload')
         return 'OK'
     # TODO: Add file, Add folder, Upload
