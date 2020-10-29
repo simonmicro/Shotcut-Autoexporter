@@ -1,9 +1,13 @@
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_user, logout_user, login_required
-from werkzeug.urls import url_parse
 from app import app
+from app.config import dirConfig
 from app.models import User, STATUS_QUEUED, STATUS_WORKING, STATUS_SUCCESS, STATUS_FAILURE
 from app.forms import LoginForm
+import os
+import shutil
+import logging
+import werkzeug
 
 projects = [
     {
@@ -52,7 +56,7 @@ def login():
         flash('Welcome!')
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
+        if not next_page or werkzeug.urls.url_parse(next_page).netloc != '':
             next_page = url_for('login')
         return redirect(next_page)
     return render_template('login.html', title='LOGIN', form=form)
@@ -93,10 +97,26 @@ def list():
 def upload():
     if request.method == 'POST':
         if 'file' in request.files and 'path' in request.form and 'id' in request.form:
-            flash('TODO: upload')
+            # The following just resolves the given path to the new project dir root of the os
+            projectId = werkzeug.utils.secure_filename(request.form['id'])
+            absPathInProject = os.path.relpath(os.path.normpath(os.path.join('/', request.form['path'])), '/')
+            absPathInSystem = os.path.join(dirConfig['upload'], projectId, absPathInProject)
+            # Make in-project subdirs...
+            os.makedirs(os.path.split(absPathInSystem)[0], exist_ok=True)
+            # And save the file itself!
+            request.files['file'].save(absPathInSystem)
+            logging.info('File uploaded for project id ' + projectId + ' to ' + absPathInSystem)
             return 'OK'
         elif 'finish' in request.form and 'id' in request.form:
-            flash('TODO: finish')
+            projectId = werkzeug.utils.secure_filename(request.form['id'])
+            absProjectPathInUpload = os.path.join(dirConfig['upload'], projectId)
+            if not os.path.isdir(absProjectPathInUpload):
+                return 'Project id not found', 404
+            absProjectPathInQueue = os.path.join(dirConfig['queue'], projectId)
+            if os.path.isdir(absProjectPathInQueue):
+                return 'Project id already finished', 400
+            shutil.move(absProjectPathInUpload, absProjectPathInQueue)
+            logging.info('Upload complete for project id ' + projectId)
             return 'OK'
         else:
             return 'Incomplete upload/finish request!', 400

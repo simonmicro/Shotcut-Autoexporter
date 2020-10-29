@@ -127,6 +127,14 @@
                             progressBar.removeAttribute('value');
                     });
                     xhr.addEventListener('load', resolve);
+                    xhr.addEventListener('readystatechange', () => {
+                        if(xhr.readyState != 4)
+                            return;
+                        if(xhr.status == 200)
+                            resolve();
+                        else
+                            reject(xhr.responseText);
+                    });
                     xhr.addEventListener('error', error);
                     xhr.addEventListener('abort', error);
                     xhr.open('POST', url);
@@ -151,7 +159,7 @@
                 xhr.addEventListener('load', () => {window.location = '{{ url_for("list") }}'});
                 xhr.addEventListener('readystatechange', () => {
                     if(xhr.readyState == 4 && xhr.status != 200)
-                        alert('Something went wrong: ' + xhr.responseText);
+                        alert('Something went wrong (during finish): ' + xhr.responseText);
                 });
                 xhr.open('POST', url);
                 let fD = new FormData();
@@ -159,7 +167,7 @@
                 fD.append('id', uploadId);
                 xhr.send(fD);
                 uploadBtn.innerText = 'Finishing...';
-            }).catch(e => console.log('error', e));
+            }).catch(e => alert('Something went wrong (during upload): ' + e));
         });
     </script>
 {% endblock %}
