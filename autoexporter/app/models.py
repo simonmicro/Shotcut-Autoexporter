@@ -7,9 +7,7 @@ import app.config
 import xml.dom.minidom
 import subprocess
 import re
-
-import time
-import random # TODO TEMP
+import datetime
 
 projects = []
 
@@ -105,11 +103,14 @@ class Project():
     def run(self):
         logging.info('Project id ' + self.id + ' running...')
         self.setStatus(app.config.STATUS_WORKING)
+        # Open the log file...
+        logFile = open(os.path.join(self.getDir(), 'LOG'), 'w')
         mltPath = os.path.join(self.getDir(), self.name + '.mlt')
-        # Load the doc
+        logFile.write('Starting export of ' + mltPath + ' (' + self.id + ') at ' + str(datetime.datetime.now()))
+        # Load the project-xml
         xmlFile = xml.dom.minidom.parse(mltPath)
         items = xmlFile.getElementsByTagName('property')
-        # Replace all path to relative
+        # Replace all paths to relative
         for item in items:
             if item.getAttribute('name') == 'resource':
                 item.firstChild.nodeValue = os.path.basename(item.firstChild.nodeValue)
@@ -117,11 +118,11 @@ class Project():
         out = open(os.path.join(self.getDir(), mltPath), 'w')
         xmlFile.writexml(out)
         out.close()
-        logging.debug('Prepared ' + self.id + ' -> starting export...')
-        # Run export command with log file...
-        log = open(os.path.join(self.getDir(), 'LOG'), 'w')
-        result = subprocess.run([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', mltPath], stderr=log, stdout=log, cwd=self.getDir())
-        log.close()
+        logFile.write('Secured project file, starting Shotcut...')
+        # Run export command...
+        result = subprocess.run([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', mltPath], stderr=logFile, stdout=logFile, cwd=self.getDir())
+        logFile.write('Finished export at ' + str(datetime.datetime.now()))
+        logFile.close()
         if result.returncode == 0:
             self.setStatus(app.config.STATUS_SUCCESS)
         else:

@@ -106,10 +106,10 @@ def list():
     if not len(projects):
         flash('No projects found, please upload one!')
         return redirect(url_for('upload'))
-    autoreload = False
+    autoreload = 0
     for p in projects:
         if p.getStatus() == app.config.STATUS_QUEUED or p.getStatus() == app.config.STATUS_WORKING:
-            autoreload = True
+            autoreload = 10
             break
     return render_template('list.html', title='LIST', projects=projects, autoreload=autoreload)
     

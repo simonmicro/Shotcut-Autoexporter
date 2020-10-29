@@ -35,6 +35,7 @@ def doWork():
         if p.getStatus() == app.config.STATUS_QUEUED:
             try:
                 p.run()
+                break # By default only run one job, this should make sure the parent thread can terminate faster!
             except Exception as e:
                 p.setStatus(app.config.STATUS_FAILURE)
                 jLog.error('Project execution failure: ' + str(e))
@@ -57,7 +58,7 @@ bgThread.start()
 def stopAllJobs():
     global run_threads
     if run_threads:
-        jLog.info('Shutting down jobs...')
+        jLog.info('Shutting down jobs (this will may take a while)...')
         run_threads = False
         bgThread.join()
     else:

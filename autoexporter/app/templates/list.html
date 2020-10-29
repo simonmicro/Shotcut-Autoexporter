@@ -3,7 +3,7 @@
 {% block main_head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='list.css') }}">
     {% if autoreload %}
-    <meta http-equiv="refresh" content="10">
+    <meta http-equiv="refresh" content="{{ autoreload }}">
     {% endif %}
 {% endblock %}
 
@@ -34,6 +34,6 @@
         <span class="color-sample queued"></span> Queued,
         <span class="color-sample working"></span> Working,
         <span class="color-sample success"></span> Success (up to 1 month),
-        <span class="color-sample failure"></span> Failure (up to 1 week)
+        <span class="color-sample failure"></span> Failure (up to 1 week){% if autoreload %}, automatic reload (every {{ autoreload }} seconds) enabled{% endif %}
     </p>
 {% endblock %}
