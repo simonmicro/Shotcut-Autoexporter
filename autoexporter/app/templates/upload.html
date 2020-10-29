@@ -146,6 +146,7 @@
                 });
             }
             let uploadId = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 16);
+            console.log('Project id', uploadId);
             let promises = Array();
             for(let [fileData, fullPath] of pathMap)
                 promises.push(uploadFile(fileData, fullPath, uploadId));
