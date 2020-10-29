@@ -145,7 +145,7 @@
                     xhr.send(fD);
                 });
             }
-            let uploadId = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 16);
+            let uploadId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);;
             console.log('Project id', uploadId);
             let promises = Array();
             for(let [fileData, fullPath] of pathMap)
