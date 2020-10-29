@@ -26,7 +26,8 @@
 }
 
 #project-list tr.status-working, .color-sample.working {
-    background: rgba(0, 0, 180, 0.3);
+    background: rgb(65, 123, 240);
+    color: white;
 }
 
 #project-list tr.status-success, .color-sample.success {
