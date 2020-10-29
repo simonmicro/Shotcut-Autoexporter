@@ -50,16 +50,6 @@ table {
     padding: 0 0.5em;
 }
 
-#main-header-title {
-    font-family: "Roboto";
-    font-size: 1.6em;
-    letter-spacing: -0.08em;
-    color: white;
-    padding: 0.3em 0.5em;
-    background: rgb(140, 180, 0);
-    text-shadow: 0.1em 0.1em 0.3em black;
-}
-
 #main {
     margin: 1em;
 }

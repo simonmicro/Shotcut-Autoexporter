@@ -14,23 +14,24 @@ def index():
     
 @fApp.route('/login', methods=['GET', 'POST'])
 def login():
-    # TODO: Login, when ip outside of range: Access denied
     if current_user.is_authenticated:
         return redirect(url_for('list'))
-    # For now we will always login
-    form = LoginForm()
-    user = User()
-    if form.validate_on_submit():
-        if not user.check_password(form.password.data):
-            flash('wrong pwd')
-            return redirect(url_for('login'))
-        flash('Welcome!')
-        login_user(user, remember=form.remember_me.data)
-        next_page = request.args.get('next')
-        if not next_page or werkzeug.urls.url_parse(next_page).netloc != '':
-            next_page = url_for('login')
-        return redirect(next_page)
-    return render_template('login.html', title='LOGIN', form=form)
+    if request.remote_addr == '172.17.0.1':
+        form = LoginForm()
+        user = User()
+        if form.validate_on_submit():
+            if not user.check_password(form.password.data):
+                flash('Wrong password.')
+                return redirect(url_for('login'))
+            flash('Welcome!')
+            login_user(user, remember=form.remember_me.data)
+            next_page = request.args.get('next')
+            if not next_page or werkzeug.urls.url_parse(next_page).netloc != '':
+                next_page = url_for('login')
+            return redirect(next_page)
+        return render_template('login.html', title='LOGIN', form=form)
+    else:
+        return render_template('login.html', title='LOGIN', ipblock=request.remote_addr)
     
 @fApp.route('/delete')
 @login_required

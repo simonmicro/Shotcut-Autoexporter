@@ -15,7 +15,7 @@ a {
     text-decoration: none;
 }
 
-button {
+input[type="submit"], button {
     transition: background var(--trans-time), box-shadow var(--trans-time);
     background: rgb(52, 125, 235);
     border: none;
@@ -28,13 +28,24 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+input[type="submit"]:hover, button:hover {
     background: rgb(52, 168, 235);
     box-shadow: 0 0 0.2em grey;
 }
 
-button:disabled {
+input[type="submit"]:disabled, button:disabled {
     background: grey;
     box-shadow: 0 0 0 transparent;
     cursor: not-allowed;
+}
+
+#app-title {
+    font-family: "Roboto";
+    font-size: 1.6em;
+    letter-spacing: -0.08em;
+    color: white;
+    padding: 0.3em 0.5em !important;
+    background: rgb(140, 180, 0);
+    text-shadow: 0.1em 0.1em 0.3em black;
+    user-select: none;
 }

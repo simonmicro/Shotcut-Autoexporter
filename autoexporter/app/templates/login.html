@@ -1,20 +1,32 @@
 {% extends "root.html" %}
 
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+{% endblock %}
+
 {% block root %}
-    <h1>LOGIN</h1>
+    <div id="loginalign">
+        <center>
+            <span id="app-title" href="/"><b>Shotcut</b>Autoexporter</span>
+        </center>
     
-    {% include "flash.html" %}
-    
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}<br>
-            {% for error in form.password.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-        <p>{{ form.submit() }}</p>
-    </form>
+        {% if form %}
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.password }}<br>
+                {% for error in form.password.errors %}
+                <center><b style="color: red;">{{ error }}</b></center>
+                {% endfor %}
+            </p>
+            <div id="loginactions">
+                <span>{{ form.remember_me() }} {{ form.remember_me.label }}</span>
+                <span>{{ form.submit() }}</span>
+            </div>
+            {% include "flash.html" %}
+        </form>
+        {% elif ipblock %}
+        <span>Your ip address of <b>{{ ipblock }}</b> is not allowed. Please change your network and try again!</span>
+        {% endif %}
+    </div>
 {% endblock %}
