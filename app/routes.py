@@ -109,6 +109,11 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+@fApp.route('/info')
+@login_required
+def info():
+    return render_template('info.html', title='Info')
+
 @fApp.route('/list')
 @login_required
 def list():
