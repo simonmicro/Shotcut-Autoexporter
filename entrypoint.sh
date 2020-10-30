@@ -1,3 +1,3 @@
 #!/bin/bash
 
-eval waitress-serve --call 'run:getApp'
+eval waitress-serve --port=8080 --call 'run:getApp'

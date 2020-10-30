@@ -3,7 +3,6 @@ services:
     exporter:
         image: realsimonmicro/shotcut-autoexporter
         restart: always
-        network_mode: host
         ports:
             - 8080:8080 # When you get an access denied for 172.42.0.1 or so: You are using ipv6, but Docker does not support that (it sets it to this ip then)
         environment:
