@@ -1,0 +1,24 @@
+{% extends "root.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    
+    {% block main_head %}{% endblock %}
+{% endblock %}
+
+{% block root %}
+    <nav id="main-header">
+        <span id="app-title" href="/"><b>Shotcut</b>Autoexporter</span>
+        <a href="{{ url_for('list') }}" class="nav-link">List</a>
+        <a href="{{ url_for('upload') }}">Upload</a>
+        <span class="spacer"></span>
+        <a class="mdi mdi-logout" href="{{ url_for('logout') }}"></a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+    
+    {% include "flash.html" %}
+    
+    <div id="main">
+        {% block main %}{% endblock %}
+    </div>
+{% endblock %}

@@ -1,0 +1,45 @@
+#project-list tr > td:first-child {
+    width: 10%;
+    white-space: nowrap;
+}
+
+#project-list progress {
+    width: 100%;
+}
+
+#project-list td {
+    padding: 0.2em 1em;
+}
+
+.color-sample {
+    display: inline-block;
+    background: blue;
+    width: 1em;
+    height: 1em;
+    content: '';
+    border-radius: 100%;
+    border: 0.1em solid grey;
+}
+
+#project-list tr.status-queued, .color-sample.queued {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+#project-list tr.status-working, .color-sample.working {
+    background: rgb(65, 123, 240);
+    color: white;
+}
+
+#project-list tr.status-success, .color-sample.success {
+    background: rgba(0, 140, 0, 0.75);
+    color: white;
+}
+
+#project-list tr.status-failed, .color-sample.failure {
+    background: rgba(220, 0, 0, 0.8);
+    color: white;
+}
+
+#status-legend {
+    font-size: 0.8em
+}
