@@ -26,7 +26,7 @@
             {% include "flash.html" %}
         </form>
         {% elif ipblock %}
-        <span>Your ip address of <b>{{ ipblock }}</b> is not allowed. Please change your network and try again!</span>
+        <p>Your ip address of <b>{{ ipblock }}</b> is not allowed. Please change your network and try again!</p>
         {% endif %}
     </div>
 {% endblock %}

@@ -10,6 +10,10 @@ STATUS_FAILURE = 3
 
 shotcutQmelt = os.path.join(os.getcwd(), 'shotcut', 'qmelt')
 
+allowedIPs = [
+    '192.168.0.1/16'
+]
+
 dirConfig = {
     STATUS_UPLOAD: tempfile.mkdtemp(),
     STATUS_QUEUED: os.path.join(os.getcwd(), 'data', 'queued'),

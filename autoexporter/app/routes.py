@@ -7,6 +7,7 @@ from app.forms import LoginForm
 import os
 import logging
 import werkzeug
+from netaddr import IPNetwork, IPAddress
 
 @fApp.route('/')
 def index():
@@ -16,7 +17,12 @@ def index():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('list'))
-    if request.remote_addr == '172.17.0.1':
+    ipOK = False
+    for n in app.config.allowedIPs:
+        if IPAddress(request.remote_addr) in IPNetwork(n):
+            ipOK = True
+            break;
+    if ipOK:
         form = LoginForm()
         user = User()
         if form.validate_on_submit():
