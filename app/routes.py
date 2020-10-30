@@ -35,9 +35,9 @@ def login():
             if not next_page or werkzeug.urls.url_parse(next_page).netloc != '':
                 next_page = url_for('login')
             return redirect(next_page)
-        return render_template('login.html', title='LOGIN', form=form)
+        return render_template('login.html', title='Login', form=form)
     else:
-        return render_template('login.html', title='LOGIN', ipblock=request.remote_addr)
+        return render_template('login.html', title='Access denied', ipblock=request.remote_addr)
     
 @fApp.route('/delete')
 @login_required
@@ -120,7 +120,7 @@ def list():
         if p.getStatus() == app.config.STATUS_QUEUED or p.getStatus() == app.config.STATUS_WORKING:
             autoreload = 10
             break
-    return render_template('list.html', title='LIST', projects=projects, autoreload=autoreload)
+    return render_template('list.html', title='Projects', projects=projects, autoreload=autoreload)
     
 @fApp.route('/upload', methods=['GET', 'POST'])
 @login_required
@@ -150,4 +150,4 @@ def upload():
                 return 'Incomplete upload/finish request!', 400
         else:
             return 'Incomplete upload/finish request!', 400
-    return render_template('upload.html', title='UPLOAD')
+    return render_template('upload.html', title='Upload files')

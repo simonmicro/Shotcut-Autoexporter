@@ -10,6 +10,7 @@ import atexit
 import schedule
 import threading
 
+logging.getLogger('schedule').propagate = False
 jLog = logging.getLogger(__name__)
 run_threads = True
 
@@ -49,7 +50,7 @@ def bgWorker():
     while run_threads:
         if sleeptime > 0:
             time.sleep(sleeptime)
-        jLog.info('Running jobs...')
+        jLog.debug('Running jobs...')
         schedule.run_pending()
         sleeptime = schedule.idle_seconds()
 

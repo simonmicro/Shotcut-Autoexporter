@@ -7,9 +7,10 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 # Env
 RUN apt-get update && apt-get install -y python3 python3-flask python3-flask-login python3-werkzeug python3-flaskext.wtf python3-waitress python3-schedule python3-netaddr
 
-WORKDIR /workshop
+WORKDIR /exporter
 
-COPY app .
+COPY app app
 COPY run.py .
+COPY entrypoint.sh .
 
-CMD waitress-serve --call 'run:getApp'
+CMD ./entrypoint.sh

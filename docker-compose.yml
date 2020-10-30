@@ -1,0 +1,15 @@
+version: '3.4'
+services:
+    exporter:
+        build: .
+        restart: always
+        ports:
+            - 8080:8080
+        environment:
+            - SECRET_KEY=[A_SECRET_KEY] # Generate with `openssl rand -base64 32`
+            - PASSWORD=[PASSWORD] # Choose something secure!
+            - NETWORKS=192.168.0.1/16 # You can also allow multiple ones e.g. 192.168.0.1/24,192.168.1.1/24
+            - SHOTCUT_URL=https://github.com/mltframework/shotcut/releases/download/v20.09.27/shotcut-linux-x86_64-200927.txz # In case you need an other version...
+        volumes:
+            - ./data:/exporter/data
+            - ./shotcut:/exporter/shotcut
