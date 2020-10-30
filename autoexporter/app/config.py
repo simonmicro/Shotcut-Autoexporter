@@ -10,6 +10,8 @@ STATUS_FAILURE = 3
 
 shotcutQmelt = os.path.join(os.getcwd(), 'shotcut', 'qmelt')
 
+password = 'password42'
+
 allowedIPs = [
     '192.168.0.1/16'
 ]

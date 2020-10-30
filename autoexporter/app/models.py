@@ -14,7 +14,7 @@ projects = []
 class User(UserMixin):
     def __init__(self):
         # TEMP generate here the login pwd hash
-        self.pwdhash = werkzeug.security.generate_password_hash('password42')
+        self.pwdhash = werkzeug.security.generate_password_hash(app.config.password)
         self.id = 42
         
     def check_password(self, pwd):
