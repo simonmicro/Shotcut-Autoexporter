@@ -37,6 +37,7 @@ def login():
             return redirect(next_page)
         return render_template('login.html', title='Login', form=form)
     else:
+        logging.info('Access denied for ' + request.remote_addr)
         return render_template('login.html', title='Access denied', ipblock=request.remote_addr)
     
 @fApp.route('/delete')
