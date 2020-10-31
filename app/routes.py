@@ -17,9 +17,14 @@ def index():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('list'))
+    remoteIP = None
+    if app.config.allowReverseProxy and request.headers.getlist('X-Forwarded-For'):
+       remoteIP = request.headers.getlist('X-Forwarded-For')[0]
+    else:
+       remoteIP = request.remote_addr
     ipOK = False
     for n in app.config.allowedIPs:
-        if IPAddress(request.remote_addr) in IPNetwork(n):
+        if IPAddress(remoteIP) in IPNetwork(n):
             ipOK = True
             break;
     if ipOK:
@@ -37,8 +42,8 @@ def login():
             return redirect(next_page)
         return render_template('login.html', title='Login', form=form)
     else:
-        logging.info('Access denied for ' + request.remote_addr)
-        return render_template('login.html', title='Access denied', ipblock=request.remote_addr)
+        logging.info('Access denied for ' + remoteIP + ' (allow reverse proxies: ' + str(app.config.allowReverseProxy) + ')')
+        return render_template('login.html', title='Access denied', ipblock=remoteIP)
     
 @fApp.route('/delete')
 @login_required

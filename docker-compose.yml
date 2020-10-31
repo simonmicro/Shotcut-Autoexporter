@@ -6,6 +6,7 @@ services:
         ports:
             - 8080:8080 # When you get an access denied for 172.42.0.1 or so: You are using ipv6, but Docker does not support that (it sets it to this ip then)
         environment:
+            - ALLOW_REVERSE_PROXY=false # This enables the use of the included "X-Forwarded-For", when it is set. This can be used to bypass the network restrictions!
             - SECRET_KEY=[A_SECRET_KEY] # Generate with `openssl rand -base64 32`
             - PASSWORD=[PASSWORD] # Choose something secure!
             - NETWORKS=127.0.0.1/16,192.168.0.1/16 # Whitelisted networks

@@ -24,6 +24,7 @@ for key in dirConfig:
 
 shotcutPath = os.path.join(os.getcwd(), 'shotcut')
 shotcutQmelt = os.path.join(shotcutPath, 'Shotcut', 'Shotcut.app', 'qmelt')
+allowReverseProxy = os.environ.get('ALLOW_REVERSE_PROXY') == 'true'
 password = os.environ.get('PASSWORD')
 allowedIPs = os.environ.get('NETWORKS').split(',')
 secretKey = os.environ.get('SECRET_KEY') or str(random.random())
