@@ -14,7 +14,7 @@
         <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
             <p>
-                {{ form.password }}<br>
+                {{ form.password(autocomplete="current-password") }}<br>
                 {% for error in form.password.errors %}
                 <center><b style="color: red;">{{ error }}</b></center>
                 {% endfor %}
