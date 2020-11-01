@@ -8,6 +8,7 @@ import xml.dom.minidom
 import subprocess
 import re
 import datetime
+import time
 
 projects = []
 
@@ -109,18 +110,24 @@ class Project():
             return True
         return False
 
-    def abortRun():
-        # When queued: Exception, otherwise do as requested
-        pass
+    def canAbort(self):
+        if self.status == app.config.STATUS_QUEUED:
+            return False
+        return self.allowRun
+
+    def abortRun(self):
+        if self.status == app.config.STATUS_QUEUED:
+            raise Exception('Project is still queued!')
+        self.allowRun = False
         
     def run(self):
         self.allowRun = True
         logging.info('Project id ' + self.id + ' running...')
         self.setStatus(app.config.STATUS_WORKING)
         # Open the log file...
-        logFile = open(os.path.join(self.getDir(), 'LOG'), 'w')
+        logFile = open(os.path.join(self.getDir(), 'LOG'), 'wb', buffering=0) # No buffering for maximum responsiveness!
         mltPath = os.path.join(self.getDir(), self.name + '.mlt')
-        logFile.write('Starting export of ' + mltPath + ' (' + self.id + ') at ' + str(datetime.datetime.now()))
+        logFile.write(('Starting export of ' + mltPath + ' (' + self.id + ') at ' + str(datetime.datetime.now()) + '\n').encode())
         # Load the project-xml
         xmlFile = xml.dom.minidom.parse(mltPath)
         items = xmlFile.getElementsByTagName('property')
@@ -132,15 +139,25 @@ class Project():
         out = open(os.path.join(self.getDir(), mltPath), 'w')
         xmlFile.writexml(out)
         out.close()
-        logFile.write('Secured project file, starting Shotcut...')
+        logFile.write(('Secured project file, starting Shotcut...\n').encode())
         # Run export command...
-
-        # TODO: Popen(), poll() for is finished, if allowRun is False (query every second!) -> popen.terminate(), then poll() return code -> when terminated put log msg and set as failed, otherwise proceed and poll until happy code received -> proceed to normal
-
-        #result = subprocess.run([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', mltPath], stderr=logFile, stdout=logFile, cwd=self.getDir())
-        logFile.write('Finished export at ' + str(datetime.datetime.now()))
+        process = subprocess.Popen([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', mltPath], stderr=logFile, stdout=logFile, cwd=self.getDir(), bufsize=1) # Minimal buffering for maximum responsiveness!
+        running = None
+        while running == None:
+            if not self.allowRun:
+                # Okay, someone requested to abort the run -> terminate process and set status to failed!
+                process.terminate()
+                logFile.write(('Terminate request received at ' + str(datetime.datetime.now()) + '! It will may take some more time until the process stops...\n').encode())
+                process.communicate() # Wait until the process really ends
+                logFile.close()
+                self.setStatus(app.config.STATUS_FAILURE)
+                return
+            running = process.poll()
+            time.sleep(1)
+        
+        logFile.write(('Finished export at ' + str(datetime.datetime.now()) + '\n').encode())
         logFile.close()
-        if result.returncode == 0:
+        if process.returncode == 0:
             self.setStatus(app.config.STATUS_SUCCESS)
         else:
             self.setStatus(app.config.STATUS_FAILURE)

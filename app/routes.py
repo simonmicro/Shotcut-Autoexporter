@@ -73,6 +73,19 @@ def retry():
             flash('Project not found')
     return redirect('list')
     
+@fApp.route('/cancel')
+@login_required
+def cancel():
+    pid = request.args.get('id')
+    if pid:
+        p = Project.get(pid)
+        if p:
+            p.abortRun()
+            flash('Termination of project "' + p.getName() + '" had been scheduled...')
+        else:
+            flash('Project not found')
+    return redirect('list')
+    
 @fApp.route('/log')
 @login_required
 def log():
