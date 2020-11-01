@@ -16,6 +16,7 @@ class User(UserMixin):
         # TEMP generate here the login pwd hash
         self.pwdhash = werkzeug.security.generate_password_hash(app.config.password)
         self.id = 42
+        self.allowRun = None
         
     def check_password(self, pwd):
         return werkzeug.security.check_password_hash(self.pwdhash, pwd)
@@ -107,8 +108,13 @@ class Project():
             logging.info('Project id ' + self.id + ' deleted')
             return True
         return False
+
+    def abortRun():
+        # When queued: Exception, otherwise do as requested
+        pass
         
     def run(self):
+        self.allowRun = True
         logging.info('Project id ' + self.id + ' running...')
         self.setStatus(app.config.STATUS_WORKING)
         # Open the log file...
@@ -128,7 +134,10 @@ class Project():
         out.close()
         logFile.write('Secured project file, starting Shotcut...')
         # Run export command...
-        result = subprocess.run([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', mltPath], stderr=logFile, stdout=logFile, cwd=self.getDir())
+
+        # TODO: Popen(), poll() for is finished, if allowRun is False (query every second!) -> popen.terminate(), then poll() return code -> when terminated put log msg and set as failed, otherwise proceed and poll until happy code received -> proceed to normal
+
+        #result = subprocess.run([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', mltPath], stderr=logFile, stdout=logFile, cwd=self.getDir())
         logFile.write('Finished export at ' + str(datetime.datetime.now()))
         logFile.close()
         if result.returncode == 0:
