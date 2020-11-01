@@ -4,7 +4,7 @@
 }
 
 #project-list progress {
-    width: 100%;
+    width: calc(100% - 5em);
 }
 
 #project-list td {
