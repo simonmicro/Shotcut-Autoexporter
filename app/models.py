@@ -52,11 +52,12 @@ class Project():
         value = None
         log = self.getLog()
         for line in log[::-1]:
-            m = re.search(r'\d+$', line)
-            # if the string ends in digits m will be a Match object, or None otherwise.
-            if m is not None:
-                value = int(m.group())
-                break
+            if bool(re.match('.*percentage:\s+\d+', line)):
+                m = re.search(r'\d+$', line)
+                # if the string ends in digits m will be a Match object, or None otherwise.
+                if m is not None:
+                    value = int(m.group())
+                    break
         return value
         
     def getDir(self, status = None):
