@@ -115,6 +115,7 @@
                     function error(e) {
                         fileData.row.lastChild.firstChild.remove(); //remove the progress bar
                         fileData.row.lastChild.appendChild(document.createTextNode('ERROR ' + e));
+                        console.error(e);
                         reject(e);
                     }
                     //Start XHR upload - and also update the progress bar on any progress event
