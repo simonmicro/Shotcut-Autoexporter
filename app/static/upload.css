@@ -9,3 +9,8 @@
 #uploads progress {
     width: 100%;
 }
+
+#uploadnote {
+    font-size: 0.8em;
+    color: grey;
+}
