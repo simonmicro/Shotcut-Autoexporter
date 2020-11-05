@@ -18,7 +18,7 @@ run_threads = True
 
 def doCleanup():
     jLog.info('Cleaning projects...')
-    # TODO clean uploads (24h)!
+    # TODO clean failed uploads (24h)!
     for p in app.models.projects:
         if p.getStatus() == app.config.STATUS_SUCCESS:
             s = os.stat(p.getDir())
@@ -30,17 +30,20 @@ def doCleanup():
                 p.delete()
 schedule.every().day.do(doCleanup)
         
-def doWork():
+def startProjects():
+    def doWork(p):
+        try:
+            p.run()
+        except Exception as e:
+            p.setStatus(app.config.STATUS_FAILURE)
+            jLog.error('Project execution failure: ' + str(e))  
+
     jLog.debug('Working on queue...')
     for p in app.models.projects:
         if p.getStatus() == app.config.STATUS_QUEUED:
-            try:
-                p.run()
-                break # By default only run one job, this should make sure the parent thread can terminate faster!
-            except Exception as e:
-                p.setStatus(app.config.STATUS_FAILURE)
-                jLog.error('Project execution failure: ' + str(e))
-schedule.every(10).seconds.do(doWork)
+            threading.Thread(target=doWork, args=(p,)).start()
+            time.sleep(1) # Sleep a while to give the thread time to start up...
+schedule.every(10).seconds.do(startProjects)
 
 # Worker-thread-model
 

@@ -5,6 +5,7 @@ import logging
 from flask_login import UserMixin
 import app.config
 import xml.dom.minidom
+import signal
 import subprocess
 import re
 import datetime
@@ -125,7 +126,7 @@ class Project():
         logging.info('Project id ' + self.id + ' running...')
         self.setStatus(app.config.STATUS_WORKING)
         # Open the log file...
-        logFile = open(os.path.join(self.getDir(), 'LOG'), 'wb', buffering=0) # No buffering for maximum responsiveness!
+        logFile = open(os.path.join(self.getDir(), 'LOG'), 'ab', buffering=0) # No buffering for maximum responsiveness!
         mltPath = os.path.join(self.getDir(), self.name + '.mlt')
         logFile.write(('Starting export of ' + mltPath + ' (' + self.id + ') at ' + str(datetime.datetime.now()) + '\n').encode())
         # Load the project-xml
@@ -141,13 +142,13 @@ class Project():
         out.close()
         logFile.write(('Secured project file, starting Shotcut...\n').encode())
         # Run export command...
-        process = subprocess.Popen([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', mltPath], stderr=logFile, stdout=logFile, cwd=self.getDir(), bufsize=1) # Minimal buffering for maximum responsiveness!
+        process = subprocess.Popen([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', mltPath], stderr=logFile, stdout=logFile, cwd=self.getDir(), shell=False, preexec_fn=os.setsid, bufsize=1) # Minimal buffering for maximum responsiveness!
         running = None
         while running == None:
             if not self.allowRun:
                 # Okay, someone requested to abort the run -> terminate process and set status to failed!
-                process.terminate()
-                logFile.write(('Terminate request received at ' + str(datetime.datetime.now()) + '! It will may take some more time until the process stops...\n').encode())
+                os.killpg(os.getpgid(process.pid), signal.SIGTERM) # Kill the shell and every child process!
+                logFile.write(('Terminate request received at ' + str(datetime.datetime.now()) + '! Waiting for process to end...\n').encode())
                 process.communicate() # Wait until the process really ends
                 logFile.close()
                 self.setStatus(app.config.STATUS_FAILURE)
