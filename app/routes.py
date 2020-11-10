@@ -114,7 +114,7 @@ def download():
         if p:
             result = p.getResultPath()
             if result:
-                return send_file(result, as_attachment=True, attachment_filename=p.getName() + os.path.splitext(result)[1])
+                return send_file(result, as_attachment=(request.args.get('stream') != 'true'), attachment_filename=p.getName() + os.path.splitext(result)[1])
             else:
                 flash('Download for project "' + p.getName() + '" is not available!')
         else:

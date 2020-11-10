@@ -22,7 +22,10 @@
                     {% if project.getStatus() == 1 %}
                         <progress max="100" {% if project.getProgress() != None %}value="{{ project.getProgress() }}"{% endif %}> {{ project.getProgress() }}% </progress>
                     {% endif %}
-                    {% if project.getStatus() == 2 %}<a class="mdi mdi-download" href="{{ url_for('download', id=project.getId()) }}" download></a>{% endif %}
+                    {% if project.getStatus() == 2 %}
+                        <a class="mdi mdi-play" href="{{ url_for('download', stream='true', id=project.getId()) }}"></a>
+                        <a class="mdi mdi-download" href="{{ url_for('download', stream='false', id=project.getId()) }}" download></a>
+                    {% endif %}
                     {% if project.getStatus() == 3 %}<a class="mdi mdi-reload" href="{{ url_for('retry', id=project.getId()) }}"></a>{% endif %}
                     {% if project.getStatus() == 1 or project.getStatus() == 2 or project.getStatus() == 3 %}<a class="mdi mdi-text-box-search-outline" href="{{ url_for('log', id=project.getId()) }}"></a>{% endif %}
                     {% if project.getStatus() != 1 %}
