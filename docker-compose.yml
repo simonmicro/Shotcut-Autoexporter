@@ -10,7 +10,7 @@ services:
             - SECRET_KEY=[A_SECRET_KEY] # Generate with `openssl rand -base64 32`
             - PASSWORD=[PASSWORD] # Choose something secure!
             - NETWORKS=127.0.0.1/16,192.168.0.1/16 # Whitelisted networks
-            - SHOTCUT_URL=https://github.com/mltframework/shotcut/releases/download/v20.09.27/shotcut-linux-x86_64-200927.txz # In case you need an other version...
+            - SHOTCUT_URL=https://github.com/mltframework/shotcut/releases/download/v21.05.01/shotcut-linux-x86_64-210501.txz # In case you need an other version...
         volumes:
             - ./data:/exporter/data
             - ./shotcut:/exporter/shotcut
