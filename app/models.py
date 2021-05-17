@@ -143,7 +143,7 @@ class Project():
         out.close()
         logFile.write(('Secured project file, starting Shotcut...\n').encode())
         # Run export command...
-        process = subprocess.Popen([app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', mltPath], stderr=logFile, stdout=logFile, cwd=self.getDir(), shell=False, preexec_fn=os.setsid, bufsize=1) # Minimal buffering for maximum responsiveness!
+        process = subprocess.Popen(['xvfb-run', '-a', app.config.shotcutQmelt, '-verbose', '-progress', '-consumer', 'avformat:' + self.id + '.mp4', mltPath], stderr=logFile, stdout=logFile, cwd=self.getDir(), shell=False, preexec_fn=os.setsid, bufsize=1) # Minimal buffering for maximum responsiveness!
         running = None
         while running == None:
             if not self.allowRun:
