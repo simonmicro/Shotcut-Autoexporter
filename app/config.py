@@ -23,7 +23,7 @@ for key in dirConfig:
     os.makedirs(dirConfig[key], exist_ok=True)
 
 shotcutPath = os.path.join(os.getcwd(), 'shotcut')
-shotcutQmelt = os.path.join(shotcutPath, 'Shotcut', 'Shotcut.app', 'qmelt')
+shotcutQmelt = os.path.join(shotcutPath, 'Shotcut', 'Shotcut.app', 'melt')
 allowReverseProxy = os.environ.get('ALLOW_REVERSE_PROXY') == 'true'
 password = os.environ.get('PASSWORD')
 allowedIPs = os.environ.get('NETWORKS').split(',')
